@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import tempfile
 import tkinter as tk
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
@@ -17,6 +18,25 @@ SETTING_NAMES = (
     "ascendIntervalMs",
     "saleIntervalMs",
 )
+SECONDS_DECIMAL_PLACES = Decimal("0.001")
+
+
+def ms_to_seconds_text(ms: int) -> str:
+    seconds = (Decimal(ms) / Decimal(1000)).quantize(SECONDS_DECIMAL_PLACES)
+    return format(seconds.normalize(), "f")
+
+
+def seconds_text_to_ms(text: str, label: str) -> int:
+    try:
+        seconds = Decimal(text.strip())
+    except InvalidOperation as exc:
+        raise ValueError(f"{label} は秒数で入力してください。") from exc
+    if seconds <= 0:
+        raise ValueError(f"{label} は0より大きい値にしてください。")
+    ms = int((seconds * Decimal(1000)).to_integral_value())
+    if ms <= 0:
+        raise ValueError(f"{label} は1ms以上になる値にしてください。")
+    return ms
 
 
 def find_autohotkey() -> Path | None:
@@ -134,13 +154,13 @@ class MacroConfigApp(tk.Tk):
         root = ttk.Frame(self, padding=12)
         root.grid(row=0, column=0, sticky="nsew")
 
-        ttk.Label(root, text="ダンジョンクリア間隔 (ms)").grid(row=0, column=0, sticky="w", **padding)
+        ttk.Label(root, text="ダンジョンクリア間隔 (秒)").grid(row=0, column=0, sticky="w", **padding)
         ttk.Entry(root, textvariable=self.dungeon_var, width=18).grid(row=0, column=1, sticky="ew", **padding)
 
-        ttk.Label(root, text="転生間隔 (ms)").grid(row=1, column=0, sticky="w", **padding)
+        ttk.Label(root, text="転生間隔 (秒)").grid(row=1, column=0, sticky="w", **padding)
         ttk.Entry(root, textvariable=self.ascend_var, width=18).grid(row=1, column=1, sticky="ew", **padding)
 
-        ttk.Label(root, text="売却間隔 (ms)").grid(row=2, column=0, sticky="w", **padding)
+        ttk.Label(root, text="売却間隔 (秒)").grid(row=2, column=0, sticky="w", **padding)
         ttk.Entry(root, textvariable=self.sale_var, width=18).grid(row=2, column=1, sticky="ew", **padding)
 
         ttk.Label(root, text="実行するAHK").grid(row=3, column=0, sticky="w", **padding)
@@ -194,9 +214,9 @@ class MacroConfigApp(tk.Tk):
         except Exception as exc:
             messagebox.showerror("読み込みエラー", str(exc))
             return
-        self.dungeon_var.set(str(values["dungeonClearIntervalMs"]))
-        self.ascend_var.set(str(values["ascendIntervalMs"]))
-        self.sale_var.set(str(values["saleIntervalMs"]))
+        self.dungeon_var.set(ms_to_seconds_text(values["dungeonClearIntervalMs"]))
+        self.ascend_var.set(ms_to_seconds_text(values["ascendIntervalMs"]))
+        self.sale_var.set(ms_to_seconds_text(values["saleIntervalMs"]))
         self.status_var.set("設定を読み込みました。")
 
     def collect_values(self) -> dict[str, int]:
@@ -210,16 +230,10 @@ class MacroConfigApp(tk.Tk):
             "ascendIntervalMs": self.ascend_var.get(),
             "saleIntervalMs": self.sale_var.get(),
         }
-        values: dict[str, int] = {}
-        for name, raw in raw_values.items():
-            try:
-                value = int(raw)
-            except ValueError as exc:
-                raise ValueError(f"{labels[name]} は整数のミリ秒で入力してください。") from exc
-            if value <= 0:
-                raise ValueError(f"{labels[name]} は1以上にしてください。")
-            values[name] = value
-        return values
+        return {
+            name: seconds_text_to_ms(raw, labels[name])
+            for name, raw in raw_values.items()
+        }
 
     def save_only(self) -> bool:
         try:
