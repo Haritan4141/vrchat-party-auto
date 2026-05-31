@@ -19,6 +19,11 @@ SETTING_NAMES = (
     "saleIntervalMs",
 )
 SECONDS_DECIMAL_PLACES = Decimal("0.001")
+DUNGEON_BUTTON_PATTERN = re.compile(
+    r"^(?P<indent>\s*)(?P<comment>;?)\s*dungeonButtonMoveY\s*:=\s*"
+    r"(?P<value>\d+)(?P<spacing>\s*;\s*)(?P<label>.+?)\s*$",
+    re.MULTILINE,
+)
 
 
 def ms_to_seconds_text(ms: int) -> str:
@@ -37,6 +42,22 @@ def seconds_text_to_ms(text: str, label: str) -> int:
     if ms <= 0:
         raise ValueError(f"{label} は1ms以上になる値にしてください。")
     return ms
+
+
+def dungeon_button_options(text: str | None = None) -> list[tuple[str, int, bool]]:
+    if text is None:
+        text = CONFIG_PATH.read_text(encoding="utf-8-sig")
+
+    options: list[tuple[str, int, bool]] = []
+    for match in DUNGEON_BUTTON_PATTERN.finditer(text):
+        label = match.group("label").strip()
+        value = int(match.group("value"))
+        active = match.group("comment") != ";"
+        options.append((label, value, active))
+
+    if not options:
+        raise ValueError(f"{CONFIG_PATH.name} に dungeonButtonMoveY の候補が見つかりません。")
+    return options
 
 
 def find_autohotkey() -> Path | None:
@@ -69,12 +90,17 @@ def read_config() -> dict[str, int]:
         if not match:
             raise ValueError(f"{CONFIG_PATH.name} に {name} が見つかりません。")
         values[name] = int(match.group(1))
+    active_options = [option for option in dungeon_button_options(text) if option[2]]
+    if len(active_options) != 1:
+        raise ValueError(f"{CONFIG_PATH.name} に dungeonButtonMoveY が見つかりません。")
+    values["dungeonButtonMoveY"] = active_options[0][1]
     return values
 
 
 def write_config(values: dict[str, int]) -> None:
     text = CONFIG_PATH.read_text(encoding="utf-8-sig")
-    for name, value in values.items():
+    for name in SETTING_NAMES:
+        value = values[name]
         text, count = re.subn(
             rf"^(\s*{re.escape(name)}\s*:=\s*)\d+(\b.*)$",
             rf"\g<1>{value}\2",
@@ -84,6 +110,23 @@ def write_config(values: dict[str, int]) -> None:
         )
         if count != 1:
             raise ValueError(f"{CONFIG_PATH.name} の {name} を更新できませんでした。")
+
+    dungeon_value = values["dungeonButtonMoveY"]
+    option_values = {value for _label, value, _active in dungeon_button_options(text)}
+    if dungeon_value not in option_values:
+        raise ValueError("ダンジョンボタン位置の値が不正です。")
+
+    def replace_dungeon_button(match: re.Match[str]) -> str:
+        value = int(match.group("value"))
+        comment = "" if value == dungeon_value else ";"
+        return (
+            f"{match.group('indent')}{comment}dungeonButtonMoveY := {value}"
+            f"{match.group('spacing')}{match.group('label').strip()}"
+        )
+
+    text, count = DUNGEON_BUTTON_PATTERN.subn(replace_dungeon_button, text)
+    if count == 0:
+        raise ValueError(f"{CONFIG_PATH.name} の dungeonButtonMoveY を更新できませんでした。")
     CONFIG_PATH.write_text(text, encoding="utf-8-sig")
 
 
@@ -131,10 +174,12 @@ class MacroConfigApp(tk.Tk):
         self.autohotkey_exe = find_autohotkey()
         self.macro_paths = macro_files()
         self.macro_by_name = {path.name: path for path in self.macro_paths}
+        self.dungeon_button_options: dict[str, int] = {}
 
         self.dungeon_var = tk.StringVar()
         self.ascend_var = tk.StringVar()
         self.sale_var = tk.StringVar()
+        self.dungeon_button_var = tk.StringVar()
         self.ahk_var = tk.StringVar()
         self.selected_ahk_path: Path | None = None
         self.status_var = tk.StringVar()
@@ -163,7 +208,17 @@ class MacroConfigApp(tk.Tk):
         ttk.Label(root, text="売却間隔 (秒)").grid(row=2, column=0, sticky="w", **padding)
         ttk.Entry(root, textvariable=self.sale_var, width=18).grid(row=2, column=1, sticky="ew", **padding)
 
-        ttk.Label(root, text="実行するAHK").grid(row=3, column=0, sticky="w", **padding)
+        ttk.Label(root, text="ダンジョンボタン位置").grid(row=3, column=0, sticky="w", **padding)
+        self.dungeon_button_combo = ttk.Combobox(
+            root,
+            textvariable=self.dungeon_button_var,
+            values=[],
+            width=18,
+            state="readonly",
+        )
+        self.dungeon_button_combo.grid(row=3, column=1, sticky="ew", **padding)
+
+        ttk.Label(root, text="実行するAHK").grid(row=4, column=0, sticky="w", **padding)
         combo = ttk.Combobox(
             root,
             textvariable=self.ahk_var,
@@ -171,18 +226,18 @@ class MacroConfigApp(tk.Tk):
             width=40,
             state="readonly",
         )
-        combo.grid(row=3, column=1, sticky="ew", **padding)
+        combo.grid(row=4, column=1, sticky="ew", **padding)
         combo.bind("<<ComboboxSelected>>", self.on_ahk_selected)
-        ttk.Button(root, text="選択", command=self.browse_ahk).grid(row=3, column=2, sticky="ew", **padding)
+        ttk.Button(root, text="選択", command=self.browse_ahk).grid(row=4, column=2, sticky="ew", **padding)
 
         buttons = ttk.Frame(root)
-        buttons.grid(row=4, column=0, columnspan=3, sticky="e", pady=(10, 4))
+        buttons.grid(row=5, column=0, columnspan=3, sticky="e", pady=(10, 4))
         ttk.Button(buttons, text="再読込", command=self.reload_config).grid(row=0, column=0, padx=4)
         ttk.Button(buttons, text="保存のみ", command=self.save_only).grid(row=0, column=1, padx=4)
         ttk.Button(buttons, text="適用して実行", command=self.apply_and_run).grid(row=0, column=2, padx=4)
 
         ttk.Label(root, textvariable=self.status_var, foreground="#444").grid(
-            row=5,
+            row=6,
             column=0,
             columnspan=3,
             sticky="w",
@@ -217,7 +272,22 @@ class MacroConfigApp(tk.Tk):
         self.dungeon_var.set(ms_to_seconds_text(values["dungeonClearIntervalMs"]))
         self.ascend_var.set(ms_to_seconds_text(values["ascendIntervalMs"]))
         self.sale_var.set(ms_to_seconds_text(values["saleIntervalMs"]))
+        self.refresh_dungeon_button_options()
+        self.dungeon_button_var.set(self.dungeon_button_label(values["dungeonButtonMoveY"]))
         self.status_var.set("設定を読み込みました。")
+
+    def refresh_dungeon_button_options(self) -> None:
+        self.dungeon_button_options = {
+            label: value
+            for label, value, _active in dungeon_button_options()
+        }
+        self.dungeon_button_combo.configure(values=list(self.dungeon_button_options.keys()))
+
+    def dungeon_button_label(self, value: int) -> str:
+        for label, option_value in self.dungeon_button_options.items():
+            if option_value == value:
+                return label
+        raise ValueError(f"未対応のダンジョンボタン位置です: {value}")
 
     def collect_values(self) -> dict[str, int]:
         labels = {
@@ -230,10 +300,15 @@ class MacroConfigApp(tk.Tk):
             "ascendIntervalMs": self.ascend_var.get(),
             "saleIntervalMs": self.sale_var.get(),
         }
-        return {
+        values = {
             name: seconds_text_to_ms(raw, labels[name])
             for name, raw in raw_values.items()
         }
+        selected_label = self.dungeon_button_var.get()
+        if selected_label not in self.dungeon_button_options:
+            raise ValueError("ダンジョンボタン位置を選択してください。")
+        values["dungeonButtonMoveY"] = self.dungeon_button_options[selected_label]
+        return values
 
     def save_only(self) -> bool:
         try:
