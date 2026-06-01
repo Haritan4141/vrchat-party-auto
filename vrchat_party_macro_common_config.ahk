@@ -1,11 +1,11 @@
 ﻿; VRChat party macro shared interval settings.
-dungeonClearIntervalMs := 3000   ; ダンジョンクリア間隔
+dungeonClearIntervalMs := 25000   ; ダンジョンクリア間隔
 ascendIntervalMs := 600000        ; 転生間隔
 saleIntervalMs := 300000         ; 売却間隔
 
 ; VRChat party macro shared action settings.
-topLeftMoveX := 60       ; 左上/左下方向に動かす量X
-topLeftMoveY := 35       ; 左上/左下方向に動かす量Y
+topLeftMoveX := 60       ; Autoスキルから再入場までの量X
+topLeftMoveY := 35       ; Autoスキルから再入場までの量Y
 ascendLeftMoveX := 950   ; 転生ボタン方向に動かす量X
 ascendLeftMoveY := 45    ; 転生ボタン方向に動かす量Y
 dungeonLeftMoveX := 80   ; ダンジョンボタン方向に動かす量X
