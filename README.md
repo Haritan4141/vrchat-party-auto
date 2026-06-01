@@ -77,7 +77,7 @@ vrchat_party_macro_common_config.ahk
 主な設定:
 
 ```ahk
-dungeonClearIntervalMs := 25000  ; ダンジョンクリア間隔
+dungeonClearIntervalMs := 5000   ; ダンジョンクリア間隔
 ascendIntervalMs := 600000       ; 転生間隔
 saleIntervalMs := 300000         ; 売却間隔
 ```
@@ -99,8 +99,8 @@ vrchatTitle := "VRChat"
 ダンジョンボタン位置のY方向も共通化しています。
 
 ```ahk
-;dungeonButtonMoveY := 130   ; 上から1つ目
-dungeonButtonMoveY := 98    ; 上から2つ目
+dungeonButtonMoveY := 130   ; 上から1つ目
+;dungeonButtonMoveY := 98    ; 上から2つ目
 ;dungeonButtonMoveY := 60     ; 上から3つ目
 dungeonLeftMoveY := dungeonButtonMoveY
 ```
@@ -138,6 +138,7 @@ vrchat_party_macro_common_interval_actions.ahk
 vrchat_party_macro_skill.ahk
 vrchat_party_macro_skill_ascend.ahk
 vrchat_party_macro_skill_ascend_sale.ahk
+vrchat_party_macro_skill_ascend_sale_overlord.ahk
 vrchat_party_macro_skill_infinite_dungeon.ahk
 vrchat_party_macro_skill_sale.ahk
 ```

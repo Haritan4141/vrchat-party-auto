@@ -43,7 +43,7 @@ DoSaleAction()
     if (!MoveClickAndReturn(100, 100, 1))
         return
 
-    ; 領域/項目ボタンクリック
+    ; 預かり所ボタンクリック
     if (!MoveClickAndReturn(50, 50, 1))
         return
 
@@ -59,7 +59,7 @@ DoSaleAction()
     if (!MoveClickAndReturn(100, 100, 1))
         return
 
-    ; 再出撃ボタンクリック
+    ; 冒険に出るボタンクリック
     if (!MoveClickAndReturn(50, -20, 1))
         return
 
