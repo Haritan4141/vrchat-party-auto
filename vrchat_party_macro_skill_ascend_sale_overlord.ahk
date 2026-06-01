@@ -66,7 +66,7 @@ F6::
 
     running := true
     ToolTip "Testing sale action"
-    DoSaleAction()
+    DoSaleAction(true)
     running := false
     NeutralizeInputs()
 
@@ -89,7 +89,7 @@ F7::
 
     running := true
     ToolTip "Testing ascend action"
-    DoAscendAction()
+    DoAscendAction(true)
     running := false
     NeutralizeInputs()
 
@@ -176,7 +176,7 @@ RunAscendActionIfDue()
         return
 
     lastAscendActionTick := A_TickCount
-    DoAscendAction()
+    DoAscendAction(true)
 }
 
 RunSaleActionIfDue()
@@ -190,5 +190,5 @@ RunSaleActionIfDue()
         return
 
     lastSaleActionTick := A_TickCount
-    DoSaleAction()
+    DoSaleAction(true)
 }

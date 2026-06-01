@@ -132,6 +132,13 @@ vrchat_party_macro_common_interval_actions.ahk
 
 これらは部品ファイルなので、直接実行せず、マクロ本体の `.ahk` を実行してください。GUIの実行候補にも表示されません。
 
+`DoSaleAction()` と `DoAscendAction()` は、引数に `true` を渡すとダンジョン選択後にサブスキル（エクスヒール）をクリックします。引数なしの場合は従来通りサブスキルを使いません。
+
+```ahk
+DoSaleAction(true)
+DoAscendAction(true)
+```
+
 現在のマクロ本体:
 
 ```text

@@ -21,7 +21,7 @@ if (A_LineFile = A_ScriptFullPath) {
 ; =========================
 ; 売却アクション
 ; =========================
-DoSaleAction()
+DoSaleAction(useSubSkill := false)
 {
     global running, topLeftMoveX, topLeftMoveY, dungeonLeftMoveX, dungeonLeftMoveY, vrchatTitle
 
@@ -67,6 +67,12 @@ DoSaleAction()
     if (!MoveClickAndReturn(dungeonLeftMoveX, -dungeonLeftMoveY, 1))
         return
 
+    if (useSubSkill) {
+        ; サブスキル（エクスヒール）ボタンクリック
+        if (!MoveClickAndReturn(300, -50, 1))
+            return
+    }
+
     ; スタートアクション
     if (!DoStartAction())
         return
@@ -75,7 +81,7 @@ DoSaleAction()
 ; =========================
 ; 転生アクション
 ; =========================
-DoAscendAction()
+DoAscendAction(useSubSkill := false)
 {
     global running, topLeftMoveX, topLeftMoveY, ascendLeftMoveX, ascendLeftMoveY, dungeonLeftMoveX, dungeonLeftMoveY, vrchatTitle
 
@@ -101,6 +107,12 @@ DoAscendAction()
     if (!MoveClickAndReturn(dungeonLeftMoveX, -dungeonLeftMoveY, 1))
         return
 
+    if (useSubSkill) {
+        ; サブスキル（エクスヒール）ボタンクリック
+        if (!MoveClickAndReturn(300, -50, 1))
+            return
+    }
+    
     ; スタートアクション
     if (!DoStartAction())
         return
