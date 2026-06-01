@@ -8,24 +8,12 @@ CoordMode "Mouse", "Client"
 #Include "vrchat_party_macro_common_config.ahk"
 
 ; =========================
-; 設定
-; =========================
-topLeftMoveX := 60       ; 左上/左下方向に動かす量X
-topLeftMoveY := 35       ; 左上/左下方向に動かす量Y
-ascendLeftMoveX := 950   ; 転生ボタン方向に動かす量X
-ascendLeftMoveY := 60    ; 転生ボタン方向に動かす量Y
-dungeonLeftMoveX := 80   ; ダンジョンボタン方向に動かす量X
-dungeonLeftMoveY := dungeonButtonMoveY
-clickHoldMs := 60        ; クリックを押している時間
-betweenClickMs := 120    ; ダブルクリック間隔
-moveStepMs := 16         ; マウス移動の刻み
-vrchatTitle := "VRChat"
-
-; =========================
 ; 状態
 ; =========================
 global running := false
 global lastAscendActionTick := 0
+
+#Include "vrchat_party_macro_common_interval_actions.ahk"
 
 ; =========================
 ; F8: 開始/停止
@@ -38,6 +26,8 @@ F8::
     if (running) {
         ResetAscendActionTimer()
         ToolTip "Macro: ON"
+        if (!DoStartAction())
+            return
         SetTimer RunLoop, -1
     } else {
         ToolTip "Macro: OFF"
@@ -117,118 +107,4 @@ RunAscendActionIfDue()
 
     lastAscendActionTick := A_TickCount
     DoAscendAction()
-}
-
-; =========================
-; 転生アクション
-; =========================
-DoAscendAction()
-{
-    global running, topLeftMoveX, topLeftMoveY, ascendLeftMoveX, ascendLeftMoveY, dungeonLeftMoveX, dungeonLeftMoveY, vrchatTitle
-
-    if (!running)
-        return
-
-    try WinActivate vrchatTitle
-    Sleep 100
-
-    ; 逃げるボタンクリック
-    if (!MoveClickAndReturn(-topLeftMoveX, topLeftMoveY, 1))
-        return
-
-    ; 転生ボタンクリック
-    if (!MoveClickAndReturn(-ascendLeftMoveX, -ascendLeftMoveY, 1))
-        return
-
-    ; ダンジョンボタンクリック
-    if (!MoveClickAndReturn(dungeonLeftMoveX, -dungeonLeftMoveY, 1))
-        return
-}
-
-; =========================
-; メイン動作
-; 左クリック、ダンジョンクリア間隔待機、左上へ移動、2回クリック、戻る
-; =========================
-DoAction()
-{
-    global running, dungeonClearIntervalMs, topLeftMoveX, topLeftMoveY, clickHoldMs, vrchatTitle
-
-    try WinActivate vrchatTitle
-    Sleep 100
-
-    LeftClick(clickHoldMs)
-
-    SleepInterruptible(dungeonClearIntervalMs)
-    if (!running)
-        return
-
-    MoveClickAndReturn(-topLeftMoveX, -topLeftMoveY, 2)
-}
-
-LeftClick(holdMs := 60)
-{
-    Send "{LButton down}"
-    Sleep holdMs
-    Send "{LButton up}"
-}
-
-MoveClickAndReturn(dx, dy, clickCount := 1, moveMs := 250)
-{
-    global running, clickHoldMs, betweenClickMs
-
-    if (!running)
-        return false
-
-    SmoothMouseMoveRel(dx, dy, moveMs)
-    if (!running)
-        return false
-
-    Loop clickCount {
-        LeftClick(clickHoldMs)
-        SleepInterruptible(betweenClickMs)
-        if (!running)
-            return false
-    }
-
-    SmoothMouseMoveRel(-dx, -dy, moveMs)
-    return running
-}
-
-SmoothMouseMoveRel(dx, dy, totalMs := 250, stepMs := 16)
-{
-    global running
-    steps := Max(1, Floor(totalMs / stepMs))
-    sx := dx / steps
-    sy := dy / steps
-
-    Loop steps {
-        if (!running)
-            return
-        MouseMoveRel(Round(sx), Round(sy))
-        Sleep stepMs
-    }
-}
-
-MouseMoveRel(dx, dy)
-{
-    ; MOUSEEVENTF_MOVE = 0x0001, relative mouse move.
-    DllCall("mouse_event", "UInt", 0x0001, "Int", dx, "Int", dy, "UInt", 0, "UPtr", 0)
-}
-
-SleepInterruptible(ms)
-{
-    global running
-    remaining := ms
-    while (running && remaining > 0) {
-        chunk := Min(100, remaining)
-        Sleep chunk
-        remaining -= chunk
-    }
-}
-
-NeutralizeInputs()
-{
-    Send "{LButton up}{MButton up}{RButton up}"
-    Send "{Shift up}{Ctrl up}{Alt up}"
-    Sleep 10
 }

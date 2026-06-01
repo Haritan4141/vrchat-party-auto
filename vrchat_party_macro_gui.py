@@ -78,7 +78,7 @@ def macro_files() -> list[Path]:
     return sorted(
         path
         for path in ROOT.glob("vrchat_party_macro*.ahk")
-        if path.name != "vrchat_party_macro_common_config.ahk"
+        if not path.name.startswith("vrchat_party_macro_common_")
     )
 
 
