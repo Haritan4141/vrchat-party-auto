@@ -24,8 +24,8 @@ F8::
 
     if (running) {
         ToolTip "Macro: ON"
-        ;if (!DoStartAction())
-        ;    return
+        if (!EnableAutoSkill())
+            return
         SetTimer RunLoop, -1
     } else {
         ToolTip "Macro: OFF"
@@ -58,13 +58,7 @@ RunLoop()
         return
 
     while (running) {
-        if (!DoStartAction())
-            return
-
         DoAction()
-
-        if (!ReturnPositionToAutoSkill())
-            return
 
         Sleep 50
     }

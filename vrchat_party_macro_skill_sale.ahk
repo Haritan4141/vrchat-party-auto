@@ -28,7 +28,7 @@ F8::
         ResetAscendActionTimer()
         ResetSaleActionTimer()
         ToolTip "Macro: ON"
-        if (!DoStartAction())
+        if (!EnableAutoSkill())
             return
         SetTimer RunLoop, -1
     } else {

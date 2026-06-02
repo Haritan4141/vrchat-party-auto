@@ -28,8 +28,8 @@ F8::
         ResetAscendActionTimer()
         ResetSaleActionTimer()
         ToolTip "Macro: ON"
-        ;if (!DoStartAction())
-        ;    return
+        if (!EnableAutoSkill())
+            return
         SetTimer RunLoop, -1
     } else {
         ToolTip "Macro: OFF"
@@ -122,9 +122,6 @@ RunOverlordDungeon()
 {
     global running, dungeonClearIntervalMs, clickHoldMs, topLeftMoveX, topLeftMoveY, dungeonLeftMoveX, dungeonLeftMoveY
 
-    if (!DoStartAction())
-        return
-
     ; ダンジョンクリア待ち時間
     SleepInterruptible(dungeonClearIntervalMs)
     if (!running)
@@ -149,6 +146,10 @@ RunOverlordDungeon()
 
     ; サブスキル（エクスヒール）ボタンクリック
     if (!MoveClickAndReturn(300, -50, 1))
+        return
+
+    ; Autoスキル有効化
+    if (!EnableAutoSkill())
         return
 
 }

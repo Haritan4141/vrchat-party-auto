@@ -73,8 +73,8 @@ DoSaleAction(useSubSkill := false)
             return
     }
 
-    ; スタートアクション
-    if (!DoStartAction())
+    ; Autoスキル有効化
+    if (!EnableAutoSkill())
         return
 }
 
@@ -112,8 +112,8 @@ DoAscendAction(useSubSkill := false)
         if (!MoveClickAndReturn(300, -50, 1))
             return
     }
-    
-    ; スタートアクション
-    if (!DoStartAction())
+
+    ; Autoスキル有効化
+    if (!EnableAutoSkill())
         return
 }

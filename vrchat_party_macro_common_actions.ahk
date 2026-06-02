@@ -14,10 +14,10 @@ if (A_LineFile = A_ScriptFullPath) {
 
 
 ; =========================
-; スタートアクション
+; Autoスキル有効化
 ; クリックして左上へ移動
 ; =========================
-DoStartAction()
+EnableAutoSkill()
 {
     global running, topLeftMoveX, topLeftMoveY, clickHoldMs, vrchatTitle
 

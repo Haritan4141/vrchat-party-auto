@@ -26,7 +26,7 @@ F8::
     if (running) {
         ResetAscendActionTimer()
         ToolTip "Macro: ON"
-        if (!DoStartAction())
+        if (!EnableAutoSkill())
             return
         SetTimer RunLoop, -1
     } else {
