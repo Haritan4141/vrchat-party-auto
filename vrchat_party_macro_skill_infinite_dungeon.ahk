@@ -24,8 +24,6 @@ F8::
 
     if (running) {
         ToolTip "Macro: ON"
-        if (!EnableAutoSkill())
-            return
         SetTimer RunLoop, -1
     } else {
         ToolTip "Macro: OFF"
@@ -58,8 +56,34 @@ RunLoop()
         return
 
     while (running) {
-        DoAction()
+        if (!EnableAutoSkill())
+            return
+
+        RunInfiniteDungeonAction()
 
         Sleep 50
+
+        if (!ReturnPositionToAutoSkill())
+            return
     }
+}
+
+; =========================
+; 無限ダンジョン動作
+; ダンジョンクリア間隔待機、1回クリック
+; =========================
+RunInfiniteDungeonAction()
+{
+    global running, dungeonClearIntervalMs, clickHoldMs, vrchatTitle
+
+    try WinActivate vrchatTitle
+    Sleep 100
+
+    ; ダンジョンクリア待ち時間
+    SleepInterruptible(dungeonClearIntervalMs)
+    if (!running)
+        return
+
+    ; クリック
+    LeftClick(clickHoldMs)
 }
