@@ -56,6 +56,10 @@ RunLoop()
         return
 
     while (running) {
+        ; サブスキル（エクスヒール）ボタンクリック
+        if (!MoveClickAndReturn(300, -50, 2))
+            return
+
         if (!EnableAutoSkill())
             return
 
