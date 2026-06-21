@@ -1,0 +1,235 @@
+# AI Context
+
+## プロジェクト概要
+
+このプロジェクトは、VRChat内のパーティー/ダンジョン周回操作を補助するAutoHotkey v2マクロ集です。Autoスキル有効化、再入場クリック、転生アクション、売却アクション、サブスキル実行、特殊なオーバーロード/無限ダンジョン用ループをファイルごとに分けています。
+
+主な技術スタック:
+
+- AutoHotkey v2: マクロ本体
+- Python 3 + tkinter: 設定GUI
+- Windows PowerShell: 検証・Git操作
+- Git/GitHub: バージョン管理
+
+起動方法:
+
+- GUI起動: `start_macro_gui.bat`
+- AHKを直接起動: 対象の `vrchat_party_macro_*.ahk` をAutoHotkey v2で実行
+- GUIは `vrchat_party_macro_gui.py` を使い、共通設定を書き換えて選択したAHKを起動する
+
+検証方法:
+
+```powershell
+$files = rg --files -g '*.ahk'
+foreach ($f in $files) {
+    & 'C:\Program Files\AutoHotkey\v2\AutoHotkey64.exe' /ErrorStdOut /Validate $f
+    if ($LASTEXITCODE -ne 0) { Write-Host "FAILED $f"; exit $LASTEXITCODE }
+}
+python -m py_compile .\vrchat_party_macro_gui.py
+```
+
+## 現在の作業目的
+
+直近の依頼は、サブスキル（エクスヒール）、Autoスキル、GUI設定の待機、逃げる、ダンジョン選択を繰り返し、売却なしでGUI設定時間ごとに転生する新規マクロを作成することです。
+
+最終的に達成したい状態:
+
+- 新規マクロがGUIのAHK候補に表示される
+- 待機は `dungeonClearIntervalMs`、転生は `ascendIntervalMs` を使う
+- 売却処理は含めない
+- 既存の相対マウス移動の前提を崩さず、各ボタン操作後にAutoスキル位置へ戻る
+
+変更対象:
+
+- `vrchat_party_macro_skill_secret_dungeon_ascend.ahk`
+- `README.md`
+- `docs/ai_context.md`
+
+## これまでに実施した作業
+
+主要な実装・整理:
+
+- 共通設定を `vrchat_party_macro_common_config.ahk` に集約
+- 共通アクションを `vrchat_party_macro_common_actions.ahk` に集約
+- 売却/転生の共通処理を `vrchat_party_macro_common_interval_actions.ahk` に集約
+- `DoStartAction()` は `EnableAutoSkill()` にリネーム済み
+- `ReturnPositionToAutoSkill()` でAutoスキルボタン位置へ戻る処理を共通化済み
+- `MoveClickAndReturn(dx, dy, clickCount, moveMs)` により、移動、クリック、戻りを共通化済み
+- `DoSaleAction(useSubSkill := false)` / `DoAscendAction(useSubSkill := false)` は、`true` を渡すとサブスキル（エクスヒール）をクリックする
+- サブスキルクリックは現在 `MoveClickAndReturn(300, -50, 2)` になっている
+- `vrchat_party_macro_skill_ascend_sale_overlord.ahk` は特殊処理で、通常の `DoAction()` ではなく `RunOverlordDungeon()` を使う
+- `vrchat_party_macro_skill_infinite_dungeon.ahk` は無限ダンジョン用で、毎ループでサブスキル2回クリック、Autoスキル有効化、1回クリック、Autoスキル位置戻しを行う
+- `vrchat_party_macro_skill_secret_dungeon_ascend.ahk` は、サブスキル2回クリック、Autoスキル有効化、`dungeonClearIntervalMs` 待機、逃げる、ダンジョン選択を繰り返す。売却は行わず、`ascendIntervalMs` ごとに逃げる、転生、ダンジョン選択を行う
+- GUIで秒単位の間隔設定とダンジョンボタン位置選択が可能
+- GUI実行時は既知のマクロを閉じてから選択したAHKを起動し、多重起動を避ける
+
+調査して分かったこと:
+
+- AutoHotkey v2は通常 `C:\Program Files\AutoHotkey\v2\AutoHotkey64.exe` または `AutoHotkey.exe` にある
+- AHKファイルの日本語コメントを扱うため、文字コードはUTF-8 BOM付きが安全
+- 共通部品ファイルは直接実行しない想定で、直接実行時はメッセージを出して終了する
+- 作業ディレクトリはIDE表示では `C:\Users\Haritan\Documents\VRChat-Macro` になる場合があるが、実際のGitリポジトリは `C:\Users\Haritan\Documents\vrchat-party-auto`
+
+採用した方針:
+
+- 既存動作を壊さないため、共通処理の変更は影響範囲を確認してから行う
+- 特殊ファイルは無理に共通化しすぎず、必要に応じて個別関数を持たせる
+- ユーザーの手元変更や未コミット差分は勝手に破棄しない
+- Git操作は明示依頼がある場合のみ行う
+
+## 未完了タスク
+
+現時点で明確に残っている作業:
+
+- 新規追加した `vrchat_party_macro_skill_secret_dungeon_ascend.ahk` の実際のVRChat上での動作確認
+- `docs/ai_context.md` と新規マクロをGit管理に含めるか、pushするかはユーザー確認が必要
+
+次に確認すべきこと:
+
+- `README.md` の共通設定例が現在の `vrchat_party_macro_common_config.ahk` と一致しているか確認する
+  - README例: `dungeonClearIntervalMs := 5000`, `topLeftMoveY := 35`
+  - 現在の設定: `dungeonClearIntervalMs := 5000`, `topLeftMoveY := 38`, `ascendIntervalMs := 300000`
+- GUIのAHK候補に新規追加ファイルが必要になった場合、`macro_files()` の抽出条件で表示されるか確認する
+- サブスキルON専用の `skill_ascend_sale` 派生ファイルが必要な場合は、ファイル作成、検証、README更新、push要否を確認する
+
+保留中の判断:
+
+- READMEに現在値そのものを書くか、例として扱うか
+- 新しいマクロファイルを追加した場合、READMEの「現在のマクロ本体」一覧へ追記するか
+
+既知の問題・注意:
+
+- AutoHotkeyの `#Warn` で未定義グローバル警告が出やすい。共通ファイル化した関数内では必要な `global` 宣言を忘れないこと
+- `ReturnPositionToAutoSkill()` は現在位置前提の相対移動なので、呼び出しタイミングを誤るとカーソル位置がずれる
+- `EnableAutoSkill()` と `ReturnPositionToAutoSkill()` の組み合わせは、各マクロの前提位置を理解してから変更する
+
+## 動作確認・検証状況
+
+今回の `docs/ai_context.md` 作成時に実行した確認:
+
+```powershell
+git status -sb
+rg --files
+Get-Content .\README.md
+Get-Content .\vrchat_party_macro_common_config.ahk
+Get-Content .\vrchat_party_macro_common_actions.ahk
+Get-Content .\vrchat_party_macro_common_interval_actions.ahk
+Get-Content .\vrchat_party_macro_skill_ascend_sale.ahk
+Get-Content .\vrchat_party_macro_skill_ascend_sale_overlord.ahk
+Get-Content .\vrchat_party_macro_skill_infinite_dungeon.ahk
+Get-Content .\vrchat_party_macro_gui.py -TotalCount 220
+```
+
+確認できたこと:
+
+- 作成前の作業ツリーは `main...origin/main` でclean
+- `docs/` フォルダは存在しなかった
+- 現在の主要設定、共通関数、特殊マクロの実装を確認済み
+
+今回の `vrchat_party_macro_skill_secret_dungeon_ascend.ahk` 追加時に実行した確認:
+
+```powershell
+python -c "import vrchat_party_macro_gui as gui; print('\n'.join(p.name for p in gui.macro_files()))"
+$files = rg --files -g '*.ahk'
+foreach ($f in $files) {
+    & 'C:\Program Files\AutoHotkey\v2\AutoHotkey64.exe' /ErrorStdOut /Validate $f
+    if ($LASTEXITCODE -ne 0) { Write-Host "FAILED $f"; exit $LASTEXITCODE }
+}
+python -m py_compile .\vrchat_party_macro_gui.py
+```
+
+確認できたこと:
+
+- GUIのAHK候補に `vrchat_party_macro_skill_secret_dungeon_ascend.ahk` が表示される
+- AutoHotkey v2のValidateは全AHK 10ファイルで成功
+- `vrchat_party_macro_gui.py` のPythonコンパイルは成功
+
+まだ確認できていないこと:
+
+- 実際のVRChat上での動作確認
+- GUIを起動しての目視確認
+
+通常の変更後に推奨する検証:
+
+```powershell
+$files = rg --files -g '*.ahk'
+foreach ($f in $files) {
+    & 'C:\Program Files\AutoHotkey\v2\AutoHotkey64.exe' /ErrorStdOut /Validate $f
+    if ($LASTEXITCODE -ne 0) { Write-Host "FAILED $f"; exit $LASTEXITCODE }
+}
+python -m py_compile .\vrchat_party_macro_gui.py
+git status -sb
+```
+
+## 重要なファイル・ディレクトリ
+
+- `README.md`: セットアップ、GUI、共通設定、操作方法の説明
+- `start_macro_gui.bat`: GUI起動用
+- `vrchat_party_macro_gui.py`: tkinter GUI。秒単位設定、ダンジョンボタン位置選択、AHK起動、多重起動回避を担当
+- `vrchat_party_macro_common_config.ahk`: 共通設定。間隔、クリック時間、移動量、VRChatタイトルなど
+- `vrchat_party_macro_common_actions.ahk`: Autoスキル有効化、位置戻し、通常メイン動作、クリック/移動/待機の共通関数
+- `vrchat_party_macro_common_interval_actions.ahk`: 売却アクション、転生アクション
+- `vrchat_party_macro_skill.ahk`: スキル通常周回
+- `vrchat_party_macro_skill_ascend.ahk`: スキル周回 + 転生
+- `vrchat_party_macro_skill_sale.ahk`: スキル周回 + 売却。転生はコメントアウトで無効化されている箇所がある
+- `vrchat_party_macro_skill_ascend_sale.ahk`: スキル周回 + 転生 + 売却
+- `vrchat_party_macro_skill_ascend_sale_overlord.ahk`: オーバーロード用の特殊周回 + 転生 + 売却 + サブスキル
+- `vrchat_party_macro_skill_secret_dungeon_ascend.ahk`: サブスキル、Autoスキル、待機、逃げる、ダンジョン選択のループ + 転生。売却なし
+- `vrchat_party_macro_skill_infinite_dungeon.ahk`: 無限ダンジョン用。毎ループでサブスキル、Autoスキル、1回クリック、位置戻し
+- `docs/ai_context.md`: AI引き継ぎ用ドキュメント。このファイル
+
+## 注意事項・制約
+
+- 既存仕様を壊さないこと
+- 共通関数の変更は複数マクロに影響するため、呼び出し元を `rg` で必ず確認すること
+- 相対マウス移動の前提位置を崩さないこと
+- 影響範囲が大きい変更は、理由と影響範囲を明確にすること
+- ユーザーが作成・変更したファイルを勝手に上書きしないこと
+- 自分が変更していない差分を勝手に修正・削除しないこと
+- 不明点がある場合は推測で大きく進めず、必要に応じて確認すること
+- AHKファイル編集時は文字化けに注意し、UTF-8 BOM付きの既存文字コードを壊さないこと
+- 手動編集は原則 `apply_patch` を使うこと
+- ファイル探索は原則 `rg` / `rg --files` を使うこと
+
+## Git 操作に関する厳守事項
+
+危険なGit操作は絶対に行わないこと。
+
+特に以下は禁止:
+
+- `git reset`
+- `git reset --hard`
+- `git clean`
+- `git checkout -- .`
+- `git restore .`
+- `git push --force`
+- `git push -f`
+- `git rebase`
+- 履歴を書き換える操作
+- ユーザーの許可なくファイルを削除する操作
+
+コミット、ブランチ作成、push、pull、merge、rebaseなどが必要そうな場合は、実行前に必ずユーザーに確認すること。
+
+既存の変更を勝手に破棄しないこと。Git操作を提案する場合は、実行内容とリスクを説明すること。
+
+作業前後に推奨する確認:
+
+```powershell
+git status -sb
+git diff --stat
+```
+
+## 運用ルール
+
+- 次回以降のAIエージェントは、作業開始時にまず `docs/ai_context.md` を読むこと
+- 重要な進捗があったら `docs/ai_context.md` を随時更新すること
+- 方針変更、重要な実装完了、問題の発見、未完了タスクの追加・解決があった場合は必ず追記すること
+- 作業を中断する前、または一段落したタイミングで、最新状況を反映すること
+- 更新内容は簡潔かつ具体的に書くこと
+- 古い情報を削除する場合は、判断理由が分かるようにすること
+- この文書自体の更新も通常の変更と同じく、差分確認と必要な検証を行うこと
+
+## 更新履歴
+
+- 2026-06-22: `vrchat_party_macro_skill_secret_dungeon_ascend.ahk` を追加。READMEへ追記し、逃げるクリック後の追加待機は入れない初期動作に戻した。
+- 2026-06-22: `docs/ai_context.md` を新規作成。プロジェクト概要、主要設計、未完了タスク、検証方法、Git運用ルールを整理。
