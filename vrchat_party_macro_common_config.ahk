@@ -1,6 +1,6 @@
 ﻿; VRChat party macro shared interval settings.
-dungeonClearIntervalMs := 3500   ; ダンジョンクリア間隔
-ascendIntervalMs := 180000        ; 転生間隔
+dungeonClearIntervalMs := 5000   ; ダンジョンクリア間隔
+ascendIntervalMs := 300000        ; 転生間隔
 saleIntervalMs := 300000         ; 売却間隔
 
 ; VRChat party macro shared action settings.
