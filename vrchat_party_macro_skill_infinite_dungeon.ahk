@@ -66,9 +66,6 @@ RunLoop()
         RunInfiniteDungeonAction()
 
         Sleep 50
-
-        if (!ReturnPositionToAutoSkill())
-            return
     }
 }
 
@@ -78,7 +75,7 @@ RunLoop()
 ; =========================
 RunInfiniteDungeonAction()
 {
-    global running, dungeonClearIntervalMs, clickHoldMs, vrchatTitle
+    global running, dungeonClearIntervalMs, topLeftMoveX, topLeftMoveY, vrchatTitle
 
     try WinActivate vrchatTitle
     Sleep 100
@@ -89,5 +86,5 @@ RunInfiniteDungeonAction()
         return
 
     ; クリック
-    LeftClick(clickHoldMs)
+    MoveClickAndReturn(-topLeftMoveX, -topLeftMoveY, 1)
 }

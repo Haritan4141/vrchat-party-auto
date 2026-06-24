@@ -128,9 +128,6 @@ RunEscapeDungeonAction()
     try WinActivate vrchatTitle
     Sleep 100
 
-    if (!ReturnPositionToAutoSkill())
-        return false
-
     if (!MoveClickAndReturn(-topLeftMoveX, topLeftMoveY, 1))
         return false
 
@@ -153,9 +150,6 @@ RunEscapeAscendDungeonAction()
 
     try WinActivate vrchatTitle
     Sleep 100
-
-    if (!ReturnPositionToAutoSkill())
-        return false
 
     if (!MoveClickAndReturn(-topLeftMoveX, topLeftMoveY, 1))
         return false

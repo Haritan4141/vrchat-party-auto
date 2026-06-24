@@ -31,10 +31,6 @@ DoSaleAction(useSubSkill := false)
     try WinActivate vrchatTitle
     Sleep 100
 
-    ; Autoスキルに位置を戻す
-    if (!ReturnPositionToAutoSkill())
-        return
-
     ; 逃げるボタンクリック
     if (!MoveClickAndReturn(-topLeftMoveX, topLeftMoveY, 1))
         return
@@ -90,10 +86,6 @@ DoAscendAction(useSubSkill := false)
 
     try WinActivate vrchatTitle
     Sleep 100
-
-    ; Autoスキルに位置を戻す
-    if (!ReturnPositionToAutoSkill())
-        return
 
     ; 逃げるボタンクリック
     if (!MoveClickAndReturn(-topLeftMoveX, topLeftMoveY, 1))

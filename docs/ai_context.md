@@ -30,17 +30,21 @@ python -m py_compile .\vrchat_party_macro_gui.py
 
 ## 現在の作業目的
 
-直近の依頼は、サブスキル（エクスヒール）、Autoスキル、GUI設定の待機、逃げる、ダンジョン選択を繰り返し、売却なしでGUI設定時間ごとに転生する新規マクロを作成することです。
+直近の依頼は、Autoスキル位置を全マクロの中心位置として統一し、転生・売却・再入場などの各クリック操作がAutoスキル位置から開始してAutoスキル位置へ戻るようにすることです。
 
 最終的に達成したい状態:
 
-- 新規マクロがGUIのAHK候補に表示される
-- 待機は `dungeonClearIntervalMs`、転生は `ascendIntervalMs` を使う
-- 売却処理は含めない
-- 既存の相対マウス移動の前提を崩さず、各ボタン操作後にAutoスキル位置へ戻る
+- `EnableAutoSkill()` はAutoスキルをクリックするだけで、再入場位置へ移動しない
+- `DoAction()` はAutoスキル位置から再入場位置へ一時移動してクリックし、Autoスキル位置へ戻る
+- `DoSaleAction()` / `DoAscendAction()` はAutoスキル位置開始・Autoスキル位置終了の動作として扱う
+- 独自ループのオーバーロード、無限ダンジョン、シークレットダンジョンもAutoスキル位置中心に揃える
 
 変更対象:
 
+- `vrchat_party_macro_common_actions.ahk`
+- `vrchat_party_macro_common_interval_actions.ahk`
+- `vrchat_party_macro_skill_ascend_sale_overlord.ahk`
+- `vrchat_party_macro_skill_infinite_dungeon.ahk`
 - `vrchat_party_macro_skill_secret_dungeon_ascend.ahk`
 - `README.md`
 - `docs/ai_context.md`
@@ -53,12 +57,16 @@ python -m py_compile .\vrchat_party_macro_gui.py
 - 共通アクションを `vrchat_party_macro_common_actions.ahk` に集約
 - 売却/転生の共通処理を `vrchat_party_macro_common_interval_actions.ahk` に集約
 - `DoStartAction()` は `EnableAutoSkill()` にリネーム済み
-- `ReturnPositionToAutoSkill()` でAutoスキルボタン位置へ戻る処理を共通化済み
+- Autoスキル位置を中心位置として扱う方針に変更済み
+- `EnableAutoSkill()` はAutoスキルをクリックするだけで、カーソル位置はAutoスキル位置に維持する
+- `DoAction()` はAutoスキル位置から再入場位置へ一時移動してクリックし、Autoスキル位置へ戻る
+- `DoSaleAction()` / `DoAscendAction()` はAutoスキル位置開始・Autoスキル位置終了を前提にする
+- `ReturnPositionToAutoSkill()` は残しているが、通常の転生・売却・独自ループからは呼び出さない
 - `MoveClickAndReturn(dx, dy, clickCount, moveMs)` により、移動、クリック、戻りを共通化済み
 - `DoSaleAction(useSubSkill := false)` / `DoAscendAction(useSubSkill := false)` は、`true` を渡すとサブスキル（エクスヒール）をクリックする
 - サブスキルクリックは現在 `MoveClickAndReturn(300, -50, 2)` になっている
 - `vrchat_party_macro_skill_ascend_sale_overlord.ahk` は特殊処理で、通常の `DoAction()` ではなく `RunOverlordDungeon()` を使う
-- `vrchat_party_macro_skill_infinite_dungeon.ahk` は無限ダンジョン用で、毎ループでサブスキル2回クリック、Autoスキル有効化、1回クリック、Autoスキル位置戻しを行う
+- `vrchat_party_macro_skill_infinite_dungeon.ahk` は無限ダンジョン用で、毎ループでサブスキル2回クリック、Autoスキル有効化、再入場位置クリック、Autoスキル位置戻しを行う
 - `vrchat_party_macro_skill_secret_dungeon_ascend.ahk` は、サブスキル2回クリック、Autoスキル有効化、`dungeonClearIntervalMs` 待機、逃げる、ダンジョン選択を繰り返す。売却は行わず、`ascendIntervalMs` ごとに逃げる、転生、ダンジョン選択を行う
 - GUIで秒単位の間隔設定とダンジョンボタン位置選択が可能
 - GUI実行時は既知のマクロを閉じてから選択したAHKを起動し、多重起動を避ける
@@ -88,7 +96,7 @@ python -m py_compile .\vrchat_party_macro_gui.py
 
 - `README.md` の共通設定例が現在の `vrchat_party_macro_common_config.ahk` と一致しているか確認する
   - README例: `dungeonClearIntervalMs := 5000`, `topLeftMoveY := 35`
-  - 現在の設定: `dungeonClearIntervalMs := 5000`, `topLeftMoveY := 38`, `ascendIntervalMs := 300000`
+  - 現在の設定: `dungeonClearIntervalMs := 60000`, `topLeftMoveY := 38`, `ascendIntervalMs := 300000`
 - GUIのAHK候補に新規追加ファイルが必要になった場合、`macro_files()` の抽出条件で表示されるか確認する
 - サブスキルON専用の `skill_ascend_sale` 派生ファイルが必要な場合は、ファイル作成、検証、README更新、push要否を確認する
 
@@ -100,8 +108,8 @@ python -m py_compile .\vrchat_party_macro_gui.py
 既知の問題・注意:
 
 - AutoHotkeyの `#Warn` で未定義グローバル警告が出やすい。共通ファイル化した関数内では必要な `global` 宣言を忘れないこと
-- `ReturnPositionToAutoSkill()` は現在位置前提の相対移動なので、呼び出しタイミングを誤るとカーソル位置がずれる
-- `EnableAutoSkill()` と `ReturnPositionToAutoSkill()` の組み合わせは、各マクロの前提位置を理解してから変更する
+- Autoスキル位置を中心位置として統一しているため、Autoスキル位置にいる状態で `ReturnPositionToAutoSkill()` を呼ぶとカーソル位置がずれる
+- 既存マクロに `ReturnPositionToAutoSkill()` を戻す場合は、呼び出し前の位置が再入場位置であることを必ず確認する
 
 ## 動作確認・検証状況
 
@@ -174,8 +182,8 @@ git status -sb
 - `vrchat_party_macro_skill_sale.ahk`: スキル周回 + 売却。転生はコメントアウトで無効化されている箇所がある
 - `vrchat_party_macro_skill_ascend_sale.ahk`: スキル周回 + 転生 + 売却
 - `vrchat_party_macro_skill_ascend_sale_overlord.ahk`: オーバーロード用の特殊周回 + 転生 + 売却 + サブスキル
-- `vrchat_party_macro_skill_secret_dungeon_ascend.ahk`: サブスキル、Autoスキル、待機、逃げる、ダンジョン選択のループ + 転生。売却なし
-- `vrchat_party_macro_skill_infinite_dungeon.ahk`: 無限ダンジョン用。毎ループでサブスキル、Autoスキル、1回クリック、位置戻し
+- `vrchat_party_macro_skill_secret_dungeon_ascend.ahk`: サブスキル、Autoスキル、待機、逃げる、ダンジョン選択のループ + 転生。売却なし。Autoスキル位置中心
+- `vrchat_party_macro_skill_infinite_dungeon.ahk`: 無限ダンジョン用。毎ループでサブスキル、Autoスキル、再入場位置クリック、Autoスキル位置戻し
 - `docs/ai_context.md`: AI引き継ぎ用ドキュメント。このファイル
 
 ## 注意事項・制約
@@ -231,5 +239,6 @@ git diff --stat
 
 ## 更新履歴
 
+- 2026-06-25: Autoスキル位置を中心位置として統一。`EnableAutoSkill()` は位置移動しないようにし、再入場クリックや独自ループは `MoveClickAndReturn()` でAutoスキル位置へ戻る形に変更。
 - 2026-06-22: `vrchat_party_macro_skill_secret_dungeon_ascend.ahk` を追加。READMEへ追記し、逃げるクリック後の追加待機は入れない初期動作に戻した。
 - 2026-06-22: `docs/ai_context.md` を新規作成。プロジェクト概要、主要設計、未完了タスク、検証方法、Git運用ルールを整理。

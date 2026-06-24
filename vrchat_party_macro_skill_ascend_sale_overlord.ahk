@@ -120,7 +120,7 @@ RunLoop()
 ; =========================
 RunOverlordDungeon()
 {
-    global running, dungeonClearIntervalMs, clickHoldMs, topLeftMoveX, topLeftMoveY, dungeonLeftMoveX, dungeonLeftMoveY
+    global running, dungeonClearIntervalMs, topLeftMoveX, topLeftMoveY, dungeonLeftMoveX, dungeonLeftMoveY
 
     ; ダンジョンクリア待ち時間
     SleepInterruptible(dungeonClearIntervalMs)
@@ -128,12 +128,7 @@ RunOverlordDungeon()
         return
 
     ; クリック
-    LeftClick(clickHoldMs)
-    if (!running)
-        return false
-
-    ; Autoスキルに位置を戻す
-    if (!ReturnPositionToAutoSkill())
+    if (!MoveClickAndReturn(-topLeftMoveX, -topLeftMoveY, 1))
         return
 
     ; 逃げるボタンクリック

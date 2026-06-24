@@ -15,11 +15,11 @@ if (A_LineFile = A_ScriptFullPath) {
 
 ; =========================
 ; Autoスキル有効化
-; クリックして左上へ移動
+; Autoスキル位置を中心位置として維持する
 ; =========================
 EnableAutoSkill()
 {
-    global running, topLeftMoveX, topLeftMoveY, clickHoldMs, vrchatTitle
+    global running, clickHoldMs, vrchatTitle
 
     if (!running)
         return false
@@ -31,7 +31,6 @@ EnableAutoSkill()
     if (!running)
         return false
 
-    SmoothMouseMoveRel(-topLeftMoveX, -topLeftMoveY, 250)
     return running
 }
 
@@ -52,11 +51,11 @@ ReturnPositionToAutoSkill()
 
 ; =========================
 ; メイン動作
-; ダンジョンクリア間隔待機、2回クリック
+; ダンジョンクリア間隔待機、再入場を2回クリック、Autoスキル位置へ戻る
 ; =========================
 DoAction()
 {
-    global running, dungeonClearIntervalMs, clickHoldMs, betweenClickMs, vrchatTitle
+    global running, dungeonClearIntervalMs, topLeftMoveX, topLeftMoveY, vrchatTitle
 
     try WinActivate vrchatTitle
     Sleep 100
@@ -67,12 +66,7 @@ DoAction()
         return
 
     ; ダブルクリック(再入場)
-    LeftClick(clickHoldMs)
-    SleepInterruptible(betweenClickMs)
-    if (!running)
-        return
-
-    LeftClick(clickHoldMs)
+    MoveClickAndReturn(-topLeftMoveX, -topLeftMoveY, 2)
 }
 
 LeftClick(holdMs := 60)
