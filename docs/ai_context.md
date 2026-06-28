@@ -45,7 +45,7 @@ python -m py_compile .\vrchat_party_macro_gui.py
 - `vrchat_party_macro_common_interval_actions.ahk`
 - `vrchat_party_macro_skill_ascend_sale_overlord.ahk`
 - `vrchat_party_macro_skill_infinite_dungeon.ahk`
-- `vrchat_party_macro_skill_secret_dungeon_ascend.ahk`
+- `vrchat_party_macro_skill_ascend_secret_dungeon.ahk`
 - `README.md`
 - `docs/ai_context.md`
 
@@ -67,7 +67,7 @@ python -m py_compile .\vrchat_party_macro_gui.py
 - サブスキルクリックは現在 `MoveClickAndReturn(300, -50, 2)` になっている
 - `vrchat_party_macro_skill_ascend_sale_overlord.ahk` は特殊処理で、通常の `DoAction()` ではなく `RunOverlordDungeon()` を使う
 - `vrchat_party_macro_skill_infinite_dungeon.ahk` は無限ダンジョン用で、毎ループでサブスキル2回クリック、Autoスキル有効化、再入場位置クリック、Autoスキル位置戻しを行う
-- `vrchat_party_macro_skill_secret_dungeon_ascend.ahk` は、サブスキル2回クリック、Autoスキル有効化、`dungeonClearIntervalMs` 待機、逃げる、ダンジョン選択を繰り返す。売却は行わず、`ascendIntervalMs` ごとに逃げる、転生、ダンジョン選択を行う
+- `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` は、サブスキル2回クリック、Autoスキル有効化、`dungeonClearIntervalMs` 待機、逃げる、ダンジョン選択を繰り返す。売却は行わず、`ascendIntervalMs` ごとに逃げる、転生、ダンジョン選択を行う
 - GUIで秒単位の間隔設定とダンジョンボタン位置選択が可能
 - GUI実行時は既知のマクロを閉じてから選択したAHKを起動し、多重起動を避ける
 
@@ -89,14 +89,14 @@ python -m py_compile .\vrchat_party_macro_gui.py
 
 現時点で明確に残っている作業:
 
-- 新規追加した `vrchat_party_macro_skill_secret_dungeon_ascend.ahk` の実際のVRChat上での動作確認
+- 新規追加した `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` の実際のVRChat上での動作確認
 - `docs/ai_context.md` と新規マクロをGit管理に含めるか、pushするかはユーザー確認が必要
 
 次に確認すべきこと:
 
 - `README.md` の共通設定例が現在の `vrchat_party_macro_common_config.ahk` と一致しているか確認する
-  - README例: `dungeonClearIntervalMs := 5000`, `topLeftMoveY := 35`
-  - 現在の設定: `dungeonClearIntervalMs := 5000`, `topLeftMoveY := 38`, `ascendIntervalMs := 300000`
+  - README例: `dungeonClearIntervalMs := 4500`, `topLeftMoveY := 35`
+  - 現在の設定: `dungeonClearIntervalMs := 4500`, `topLeftMoveY := 38`, `ascendIntervalMs := 300000`
   - ダンジョンボタン位置候補: 上から1つ目 `130`, 上から2つ目 `98`, 上から3つ目 `60`, 上から4つ目 `22`
 - GUIのAHK候補に新規追加ファイルが必要になった場合、`macro_files()` の抽出条件で表示されるか確認する
 - サブスキルON専用の `skill_ascend_sale` 派生ファイルが必要な場合は、ファイル作成、検証、README更新、push要否を確認する
@@ -135,7 +135,7 @@ Get-Content .\vrchat_party_macro_gui.py -TotalCount 220
 - `docs/` フォルダは存在しなかった
 - 現在の主要設定、共通関数、特殊マクロの実装を確認済み
 
-今回の `vrchat_party_macro_skill_secret_dungeon_ascend.ahk` 追加時に実行した確認:
+今回の `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` 追加時に実行した確認:
 
 ```powershell
 python -c "import vrchat_party_macro_gui as gui; print('\n'.join(p.name for p in gui.macro_files()))"
@@ -149,7 +149,7 @@ python -m py_compile .\vrchat_party_macro_gui.py
 
 確認できたこと:
 
-- GUIのAHK候補に `vrchat_party_macro_skill_secret_dungeon_ascend.ahk` が表示される
+- GUIのAHK候補に `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` が表示される
 - AutoHotkey v2のValidateは全AHK 10ファイルで成功
 - `vrchat_party_macro_gui.py` のPythonコンパイルは成功
 
@@ -183,7 +183,7 @@ git status -sb
 - `vrchat_party_macro_skill_sale.ahk`: スキル周回 + 売却。転生はコメントアウトで無効化されている箇所がある
 - `vrchat_party_macro_skill_ascend_sale.ahk`: スキル周回 + 転生 + 売却
 - `vrchat_party_macro_skill_ascend_sale_overlord.ahk`: オーバーロード用の特殊周回 + 転生 + 売却 + サブスキル
-- `vrchat_party_macro_skill_secret_dungeon_ascend.ahk`: サブスキル、Autoスキル、待機、逃げる、ダンジョン選択のループ + 転生。売却なし。Autoスキル位置中心
+- `vrchat_party_macro_skill_ascend_secret_dungeon.ahk`: サブスキル、Autoスキル、待機、逃げる、ダンジョン選択のループ + 転生。売却なし。Autoスキル位置中心
 - `vrchat_party_macro_skill_infinite_dungeon.ahk`: 無限ダンジョン用。毎ループでサブスキル、Autoスキル、再入場位置クリック、Autoスキル位置戻し
 - `docs/ai_context.md`: AI引き継ぎ用ドキュメント。このファイル
 
@@ -240,7 +240,8 @@ git diff --stat
 
 ## 更新履歴
 
+- 2026-06-29: `vrchat_party_macro_skill_secret_dungeon_ascend.ahk` を `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` にリネーム。`dungeonClearIntervalMs` は `4500`、ダンジョンボタン位置は上から1つ目を有効化。
 - 2026-06-29: `dungeonButtonMoveY` に `22 ; 上から4つ目` を追加。GUIのダンジョンボタン位置プルダウンから選択可能。
 - 2026-06-25: Autoスキル位置を中心位置として統一。`EnableAutoSkill()` は位置移動しないようにし、再入場クリックや独自ループは `MoveClickAndReturn()` でAutoスキル位置へ戻る形に変更。
-- 2026-06-22: `vrchat_party_macro_skill_secret_dungeon_ascend.ahk` を追加。READMEへ追記し、逃げるクリック後の追加待機は入れない初期動作に戻した。
+- 2026-06-22: `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` を追加。READMEへ追記し、逃げるクリック後の追加待機は入れない初期動作に戻した。
 - 2026-06-22: `docs/ai_context.md` を新規作成。プロジェクト概要、主要設計、未完了タスク、検証方法、Git運用ルールを整理。

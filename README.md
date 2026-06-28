@@ -77,7 +77,7 @@ vrchat_party_macro_common_config.ahk
 主な設定:
 
 ```ahk
-dungeonClearIntervalMs := 5000   ; ダンジョンクリア間隔
+dungeonClearIntervalMs := 4500   ; ダンジョンクリア間隔
 ascendIntervalMs := 600000       ; 転生間隔
 saleIntervalMs := 300000         ; 売却間隔
 ```
@@ -149,12 +149,12 @@ vrchat_party_macro_skill.ahk
 vrchat_party_macro_skill_ascend.ahk
 vrchat_party_macro_skill_ascend_sale.ahk
 vrchat_party_macro_skill_ascend_sale_overlord.ahk
-vrchat_party_macro_skill_secret_dungeon_ascend.ahk
+vrchat_party_macro_skill_ascend_secret_dungeon.ahk
 vrchat_party_macro_skill_infinite_dungeon.ahk
 vrchat_party_macro_skill_sale.ahk
 ```
 
-`vrchat_party_macro_skill_secret_dungeon_ascend.ahk` は、サブスキル（エクスヒール）クリック、Autoスキル有効化、GUIのダンジョンクリア間隔だけ待機、逃げる、ダンジョン選択を繰り返します。売却は行わず、転生だけGUIの転生間隔で実行します。
+`vrchat_party_macro_skill_ascend_secret_dungeon.ahk` は、サブスキル（エクスヒール）クリック、Autoスキル有効化、GUIのダンジョンクリア間隔だけ待機、逃げる、ダンジョン選択を繰り返します。売却は行わず、転生だけGUIの転生間隔で実行します。
 
 ## 直接AHKを実行する場合
 
