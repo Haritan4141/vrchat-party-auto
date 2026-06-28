@@ -96,7 +96,8 @@ python -m py_compile .\vrchat_party_macro_gui.py
 
 - `README.md` の共通設定例が現在の `vrchat_party_macro_common_config.ahk` と一致しているか確認する
   - README例: `dungeonClearIntervalMs := 5000`, `topLeftMoveY := 35`
-  - 現在の設定: `dungeonClearIntervalMs := 60000`, `topLeftMoveY := 38`, `ascendIntervalMs := 300000`
+  - 現在の設定: `dungeonClearIntervalMs := 5000`, `topLeftMoveY := 38`, `ascendIntervalMs := 300000`
+  - ダンジョンボタン位置候補: 上から1つ目 `130`, 上から2つ目 `98`, 上から3つ目 `60`, 上から4つ目 `22`
 - GUIのAHK候補に新規追加ファイルが必要になった場合、`macro_files()` の抽出条件で表示されるか確認する
 - サブスキルON専用の `skill_ascend_sale` 派生ファイルが必要な場合は、ファイル作成、検証、README更新、push要否を確認する
 
@@ -239,6 +240,7 @@ git diff --stat
 
 ## 更新履歴
 
+- 2026-06-29: `dungeonButtonMoveY` に `22 ; 上から4つ目` を追加。GUIのダンジョンボタン位置プルダウンから選択可能。
 - 2026-06-25: Autoスキル位置を中心位置として統一。`EnableAutoSkill()` は位置移動しないようにし、再入場クリックや独自ループは `MoveClickAndReturn()` でAutoスキル位置へ戻る形に変更。
 - 2026-06-22: `vrchat_party_macro_skill_secret_dungeon_ascend.ahk` を追加。READMEへ追記し、逃げるクリック後の追加待機は入れない初期動作に戻した。
 - 2026-06-22: `docs/ai_context.md` を新規作成。プロジェクト概要、主要設計、未完了タスク、検証方法、Git運用ルールを整理。

@@ -102,6 +102,7 @@ vrchatTitle := "VRChat"
 dungeonButtonMoveY := 130   ; 上から1つ目
 ;dungeonButtonMoveY := 98    ; 上から2つ目
 ;dungeonButtonMoveY := 60     ; 上から3つ目
+;dungeonButtonMoveY := 22     ; 上から4つ目
 dungeonLeftMoveY := dungeonButtonMoveY
 ```
 
