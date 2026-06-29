@@ -8,13 +8,18 @@ topLeftMoveX := 60       ; Autoスキルから再入場までの量X
 topLeftMoveY := 38       ; Autoスキルから再入場までの量Y
 ascendLeftMoveX := 950   ; 転生ボタン方向に動かす量X
 ascendLeftMoveY := 45    ; 転生ボタン方向に動かす量Y
-dungeonLeftMoveX := 80   ; ダンジョンボタン方向に動かす量X
-
-; ダンジョンボタン方向に動かす量Y
+; ダンジョンボタン位置
+dungeonButtonMoveX := 80    ; 上から1つ目
 dungeonButtonMoveY := 130   ; 上から1つ目
+;dungeonButtonMoveX := 80    ; 上から2つ目
 ;dungeonButtonMoveY := 98    ; 上から2つ目
+;dungeonButtonMoveX := 80    ; 上から3つ目
 ;dungeonButtonMoveY := 60     ; 上から3つ目
+;dungeonButtonMoveX := 80    ; 上から4つ目
 ;dungeonButtonMoveY := 22     ; 上から4つ目
+;dungeonButtonMoveX := -80   ; 永傷の女王:V級
+;dungeonButtonMoveY := 22    ; 永傷の女王:V級
+dungeonLeftMoveX := dungeonButtonMoveX
 dungeonLeftMoveY := dungeonButtonMoveY
 
 clickHoldMs := 60        ; クリックを押している時間

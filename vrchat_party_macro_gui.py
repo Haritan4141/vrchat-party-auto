@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import tempfile
 import tkinter as tk
+from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
@@ -20,10 +21,22 @@ SETTING_NAMES = (
 )
 SECONDS_DECIMAL_PLACES = Decimal("0.001")
 DUNGEON_BUTTON_PATTERN = re.compile(
-    r"^(?P<indent>\s*)(?P<comment>;?)\s*dungeonButtonMoveY\s*:=\s*"
-    r"(?P<value>\d+)(?P<spacing>\s*;\s*)(?P<label>.+?)\s*$",
+    r"^(?P<indent>\s*)(?P<comment>;?)\s*dungeonButtonMove(?P<axis>[XY])\s*:=\s*"
+    r"(?P<value>-?\d+)(?P<spacing>\s*;\s*)(?P<label>.+?)\s*$",
     re.MULTILINE,
 )
+DUNGEON_LEFT_MOVE_X_PATTERN = re.compile(
+    r"^\s*dungeonLeftMoveX\s*:=\s*(?P<value>-?\d+)\b",
+    re.MULTILINE,
+)
+
+
+@dataclass(frozen=True)
+class DungeonButtonOption:
+    label: str
+    x: int
+    y: int
+    active: bool
 
 
 def ms_to_seconds_text(ms: int) -> str:
@@ -44,19 +57,40 @@ def seconds_text_to_ms(text: str, label: str) -> int:
     return ms
 
 
-def dungeon_button_options(text: str | None = None) -> list[tuple[str, int, bool]]:
+def dungeon_button_options(text: str | None = None) -> list[DungeonButtonOption]:
     if text is None:
         text = CONFIG_PATH.read_text(encoding="utf-8-sig")
 
-    options: list[tuple[str, int, bool]] = []
+    default_x_match = DUNGEON_LEFT_MOVE_X_PATTERN.search(text)
+    default_x = int(default_x_match.group("value")) if default_x_match else 80
+
+    option_data: dict[str, dict[str, object]] = {}
+    option_order: list[str] = []
     for match in DUNGEON_BUTTON_PATTERN.finditer(text):
         label = match.group("label").strip()
+        axis = match.group("axis")
         value = int(match.group("value"))
-        active = match.group("comment") != ";"
-        options.append((label, value, active))
+        if label not in option_data:
+            option_data[label] = {}
+            option_order.append(label)
+        option_data[label][axis] = value
+        option_data[label][f"{axis}_active"] = match.group("comment") != ";"
+
+    options: list[DungeonButtonOption] = []
+    for label in option_order:
+        data = option_data[label]
+        if "Y" not in data:
+            raise ValueError(f"{CONFIG_PATH.name} の {label} に dungeonButtonMoveY が見つかりません。")
+        x = int(data.get("X", default_x))
+        y = int(data["Y"])
+        if "X" in data:
+            active = bool(data.get("X_active")) and bool(data.get("Y_active"))
+        else:
+            active = bool(data.get("Y_active"))
+        options.append(DungeonButtonOption(label, x, y, active))
 
     if not options:
-        raise ValueError(f"{CONFIG_PATH.name} に dungeonButtonMoveY の候補が見つかりません。")
+        raise ValueError(f"{CONFIG_PATH.name} に dungeonButtonMoveX/Y の候補が見つかりません。")
     return options
 
 
@@ -90,10 +124,11 @@ def read_config() -> dict[str, int]:
         if not match:
             raise ValueError(f"{CONFIG_PATH.name} に {name} が見つかりません。")
         values[name] = int(match.group(1))
-    active_options = [option for option in dungeon_button_options(text) if option[2]]
+    active_options = [option for option in dungeon_button_options(text) if option.active]
     if len(active_options) != 1:
-        raise ValueError(f"{CONFIG_PATH.name} に dungeonButtonMoveY が見つかりません。")
-    values["dungeonButtonMoveY"] = active_options[0][1]
+        raise ValueError(f"{CONFIG_PATH.name} に有効な dungeonButtonMoveX/Y が1つだけ必要です。")
+    values["dungeonButtonMoveX"] = active_options[0].x
+    values["dungeonButtonMoveY"] = active_options[0].y
     return values
 
 
@@ -111,22 +146,25 @@ def write_config(values: dict[str, int]) -> None:
         if count != 1:
             raise ValueError(f"{CONFIG_PATH.name} の {name} を更新できませんでした。")
 
-    dungeon_value = values["dungeonButtonMoveY"]
-    option_values = {value for _label, value, _active in dungeon_button_options(text)}
+    dungeon_value = (values["dungeonButtonMoveX"], values["dungeonButtonMoveY"])
+    options = dungeon_button_options(text)
+    option_values = {(option.x, option.y) for option in options}
     if dungeon_value not in option_values:
         raise ValueError("ダンジョンボタン位置の値が不正です。")
+    options_by_label = {option.label: option for option in options}
 
     def replace_dungeon_button(match: re.Match[str]) -> str:
-        value = int(match.group("value"))
-        comment = "" if value == dungeon_value else ";"
+        label = match.group("label").strip()
+        option = options_by_label[label]
+        comment = "" if (option.x, option.y) == dungeon_value else ";"
         return (
-            f"{match.group('indent')}{comment}dungeonButtonMoveY := {value}"
+            f"{match.group('indent')}{comment}dungeonButtonMove{match.group('axis')} := {match.group('value')}"
             f"{match.group('spacing')}{match.group('label').strip()}"
         )
 
     text, count = DUNGEON_BUTTON_PATTERN.subn(replace_dungeon_button, text)
     if count == 0:
-        raise ValueError(f"{CONFIG_PATH.name} の dungeonButtonMoveY を更新できませんでした。")
+        raise ValueError(f"{CONFIG_PATH.name} の dungeonButtonMoveX/Y を更新できませんでした。")
     CONFIG_PATH.write_text(text, encoding="utf-8-sig")
 
 
@@ -174,7 +212,7 @@ class MacroConfigApp(tk.Tk):
         self.autohotkey_exe = find_autohotkey()
         self.macro_paths = macro_files()
         self.macro_by_name = {path.name: path for path in self.macro_paths}
-        self.dungeon_button_options: dict[str, int] = {}
+        self.dungeon_button_options: dict[str, tuple[int, int]] = {}
 
         self.dungeon_var = tk.StringVar()
         self.ascend_var = tk.StringVar()
@@ -273,21 +311,26 @@ class MacroConfigApp(tk.Tk):
         self.ascend_var.set(ms_to_seconds_text(values["ascendIntervalMs"]))
         self.sale_var.set(ms_to_seconds_text(values["saleIntervalMs"]))
         self.refresh_dungeon_button_options()
-        self.dungeon_button_var.set(self.dungeon_button_label(values["dungeonButtonMoveY"]))
+        self.dungeon_button_var.set(
+            self.dungeon_button_label(
+                values["dungeonButtonMoveX"],
+                values["dungeonButtonMoveY"],
+            )
+        )
         self.status_var.set("設定を読み込みました。")
 
     def refresh_dungeon_button_options(self) -> None:
         self.dungeon_button_options = {
-            label: value
-            for label, value, _active in dungeon_button_options()
+            option.label: (option.x, option.y)
+            for option in dungeon_button_options()
         }
         self.dungeon_button_combo.configure(values=list(self.dungeon_button_options.keys()))
 
-    def dungeon_button_label(self, value: int) -> str:
+    def dungeon_button_label(self, x: int, y: int) -> str:
         for label, option_value in self.dungeon_button_options.items():
-            if option_value == value:
+            if option_value == (x, y):
                 return label
-        raise ValueError(f"未対応のダンジョンボタン位置です: {value}")
+        raise ValueError(f"未対応のダンジョンボタン位置です: {x}, {y}")
 
     def collect_values(self) -> dict[str, int]:
         labels = {
@@ -307,7 +350,9 @@ class MacroConfigApp(tk.Tk):
         selected_label = self.dungeon_button_var.get()
         if selected_label not in self.dungeon_button_options:
             raise ValueError("ダンジョンボタン位置を選択してください。")
-        values["dungeonButtonMoveY"] = self.dungeon_button_options[selected_label]
+        values["dungeonButtonMoveX"], values["dungeonButtonMoveY"] = (
+            self.dungeon_button_options[selected_label]
+        )
         return values
 
     def save_only(self) -> bool:

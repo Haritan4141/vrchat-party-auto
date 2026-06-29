@@ -30,17 +30,21 @@ python -m py_compile .\vrchat_party_macro_gui.py
 
 ## 現在の作業目的
 
-直近の依頼は、`vrchat_party_macro_skill.ahk` とほぼ同じ構成で、再入場クリックだけを2回から1回へ変更した `vrchat_party_macro_skill_Vclass_minion_laps.ahk` を追加することです。
+直近の依頼は、`vrchat_party_macro_skill_Vclass_minion_laps.ahk` に転生ロジックを追加した `vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk` を作成し、左上方向のダンジョンボタン位置 `永傷の女王:V級` をGUIで選択できるようにすることです。
 
 最終的に達成したい状態:
 
 - 新規マクロがGUIのAHK候補に表示される
-- F8/F9などの基本操作は通常周回マクロに揃える
+- F8/F9/F7などの基本操作は転生マクロに揃える
 - `dungeonClearIntervalMs` 待機後、再入場ボタンを1回クリックしてAutoスキル位置へ戻る
-- `vrchat_party_macro_common_config.ahk` は環境差分になりやすいため、今回の変更に含めない
+- `ascendIntervalMs` ごとに `DoAscendAction()` を実行する
+- ダンジョンボタン位置候補をX/Yペア化し、`永傷の女王:V級` を `x=-80`, `y=22` で追加する
 
 変更対象:
 
+- `vrchat_party_macro_gui.py`
+- `vrchat_party_macro_common_config.ahk`
+- `vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk`
 - `vrchat_party_macro_skill_Vclass_minion_laps.ahk`
 - `README.md`
 - `docs/ai_context.md`
@@ -57,6 +61,7 @@ python -m py_compile .\vrchat_party_macro_gui.py
 - `EnableAutoSkill()` はAutoスキルをクリックするだけで、カーソル位置はAutoスキル位置に維持する
 - `DoAction()` はAutoスキル位置から再入場位置へ一時移動してクリックし、Autoスキル位置へ戻る
 - `vrchat_party_macro_skill_Vclass_minion_laps.ahk` は通常周回と同系統だが、再入場ボタンを1回だけクリックする
+- `vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk` は `vrchat_party_macro_skill_Vclass_minion_laps.ahk` に転生ロジックを追加したマクロ
 - `DoSaleAction()` / `DoAscendAction()` はAutoスキル位置開始・Autoスキル位置終了を前提にする
 - `ReturnPositionToAutoSkill()` は残しているが、通常の転生・売却・独自ループからは呼び出さない
 - `MoveClickAndReturn(dx, dy, clickCount, moveMs)` により、移動、クリック、戻りを共通化済み
@@ -92,9 +97,9 @@ python -m py_compile .\vrchat_party_macro_gui.py
 次に確認すべきこと:
 
 - `README.md` の共通設定例が現在の `vrchat_party_macro_common_config.ahk` と一致しているか確認する
-  - README例: `dungeonClearIntervalMs := 4500`, `topLeftMoveY := 35`
+  - README例: `dungeonClearIntervalMs := 4500`, `topLeftMoveY := 38`
   - 現在の設定: `dungeonClearIntervalMs := 4500`, `topLeftMoveY := 38`, `ascendIntervalMs := 300000`
-  - ダンジョンボタン位置候補: 上から1つ目 `130`, 上から2つ目 `98`, 上から3つ目 `60`, 上から4つ目 `22`
+  - ダンジョンボタン位置候補: 上から1つ目 `(80, 130)`, 上から2つ目 `(80, 98)`, 上から3つ目 `(80, 60)`, 上から4つ目 `(80, 22)`, 永傷の女王:V級 `(-80, 22)`
 - GUIのAHK候補に新規追加ファイルが必要になった場合、`macro_files()` の抽出条件で表示されるか確認する
 - サブスキルON専用の `skill_ascend_sale` 派生ファイルが必要な場合は、ファイル作成、検証、README更新、push要否を確認する
 
@@ -178,6 +183,7 @@ git status -sb
 - `vrchat_party_macro_skill.ahk`: スキル通常周回
 - `vrchat_party_macro_skill_Vclass_minion_laps.ahk`: Vclass minion向け通常周回。再入場ボタン1回クリック
 - `vrchat_party_macro_skill_ascend.ahk`: スキル周回 + 転生
+- `vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk`: Vclass minion向け通常周回 + 転生。再入場ボタン1回クリック
 - `vrchat_party_macro_skill_sale.ahk`: スキル周回 + 売却。転生はコメントアウトで無効化されている箇所がある
 - `vrchat_party_macro_skill_ascend_sale.ahk`: スキル周回 + 転生 + 売却
 - `vrchat_party_macro_skill_ascend_sale_overlord.ahk`: オーバーロード用の特殊周回 + 転生 + 売却 + サブスキル
@@ -238,6 +244,7 @@ git diff --stat
 
 ## 更新履歴
 
+- 2026-06-30: `vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk` を追加。ダンジョンボタン位置をX/Yペア化し、`永傷の女王:V級` を `(-80, 22)` で追加。
 - 2026-06-30: `vrchat_party_macro_skill_Vclass_minion_laps.ahk` を追加。通常周回と同じ構成で、再入場ボタンは1回クリック。
 - 2026-06-29: `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` の通常ループを、逃げる・ダンジョン選択ではなく再入場ボタン1回クリックに変更。転生タイミングのみ逃げる・転生・ダンジョン選択を維持。
 - 2026-06-29: `vrchat_party_macro_skill_secret_dungeon_ascend.ahk` を `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` にリネーム。`dungeonClearIntervalMs` は `4500`、ダンジョンボタン位置は上から1つ目を有効化。

@@ -78,7 +78,7 @@ vrchat_party_macro_common_config.ahk
 
 ```ahk
 dungeonClearIntervalMs := 4500   ; ダンジョンクリア間隔
-ascendIntervalMs := 600000       ; 転生間隔
+ascendIntervalMs := 300000       ; 転生間隔
 saleIntervalMs := 300000         ; 売却間隔
 ```
 
@@ -86,41 +86,50 @@ saleIntervalMs := 300000         ; 売却間隔
 
 ```ahk
 topLeftMoveX := 60       ; Autoスキルから再入場までの量X
-topLeftMoveY := 35       ; Autoスキルから再入場までの量Y
+topLeftMoveY := 38       ; Autoスキルから再入場までの量Y
 ascendLeftMoveX := 950   ; 転生ボタン方向に動かす量X
 ascendLeftMoveY := 45    ; 転生ボタン方向に動かす量Y
-dungeonLeftMoveX := 80   ; ダンジョンボタン方向に動かす量X
 clickHoldMs := 60        ; クリックを押している時間
 betweenClickMs := 300    ; ダブルクリック間隔
 moveStepMs := 16         ; マウス移動の刻み
 vrchatTitle := "VRChat"
 ```
 
-ダンジョンボタン位置のY方向も共通化しています。
+ダンジョンボタン位置のX/Y方向も共通化しています。
 
 ```ahk
+dungeonButtonMoveX := 80    ; 上から1つ目
 dungeonButtonMoveY := 130   ; 上から1つ目
+;dungeonButtonMoveX := 80    ; 上から2つ目
 ;dungeonButtonMoveY := 98    ; 上から2つ目
+;dungeonButtonMoveX := 80    ; 上から3つ目
 ;dungeonButtonMoveY := 60     ; 上から3つ目
+;dungeonButtonMoveX := 80    ; 上から4つ目
 ;dungeonButtonMoveY := 22     ; 上から4つ目
+;dungeonButtonMoveX := -80   ; 永傷の女王:V級
+;dungeonButtonMoveY := 22    ; 永傷の女王:V級
+dungeonLeftMoveX := dungeonButtonMoveX
 dungeonLeftMoveY := dungeonButtonMoveY
 ```
 
-GUIの `ダンジョンボタン位置` プルダウンは、この `dungeonButtonMoveY` の行から自動で作られます。
+GUIの `ダンジョンボタン位置` プルダウンは、この `dungeonButtonMoveX` / `dungeonButtonMoveY` の候補ペアから自動で作られます。
 
-- `;` が付いていない1行が現在有効な設定
-- `;` が付いている行は候補だが無効な設定
+- `;` が付いていないX/Yの2行セットが現在有効な設定
+- `;` が付いているX/Yの2行セットは候補だが無効な設定
 - `;` の後ろの説明文がGUIの選択肢名
 
 例えば、共通設定を以下のように変更すると、GUIの選択肢も `上段 / 中段 / 下段` になります。
 
 ```ahk
+;dungeonButtonMoveX := 80    ; 上段
 ;dungeonButtonMoveY := 140   ; 上段
+dungeonButtonMoveX := 80     ; 中段
 dungeonButtonMoveY := 105    ; 中段
+;dungeonButtonMoveX := 80    ; 下段
 ;dungeonButtonMoveY := 70    ; 下段
 ```
 
-GUIで選択して保存すると、選んだ1行だけが有効化され、他の候補はコメントアウトされます。
+GUIで選択して保存すると、選んだX/Yの2行セットだけが有効化され、他の候補はコメントアウトされます。
 
 ## 共通アクションファイル
 
@@ -148,6 +157,7 @@ DoAscendAction(true)
 vrchat_party_macro_skill.ahk
 vrchat_party_macro_skill_Vclass_minion_laps.ahk
 vrchat_party_macro_skill_ascend.ahk
+vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk
 vrchat_party_macro_skill_ascend_sale.ahk
 vrchat_party_macro_skill_ascend_sale_overlord.ahk
 vrchat_party_macro_skill_ascend_secret_dungeon.ahk
@@ -158,6 +168,8 @@ vrchat_party_macro_skill_sale.ahk
 `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` は、サブスキル（エクスヒール）クリック、Autoスキル有効化、GUIのダンジョンクリア間隔だけ待機、再入場ボタン1回クリックを繰り返します。売却は行わず、転生だけGUIの転生間隔で実行します。
 
 `vrchat_party_macro_skill_Vclass_minion_laps.ahk` は、通常周回マクロと同じ構成で、GUIのダンジョンクリア間隔だけ待機したあと、再入場ボタンを1回だけクリックします。
+
+`vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk` は、`vrchat_party_macro_skill_Vclass_minion_laps.ahk` に転生ロジックを追加したマクロです。
 
 ## 直接AHKを実行する場合
 
