@@ -67,7 +67,7 @@ python -m py_compile .\vrchat_party_macro_gui.py
 - サブスキルクリックは現在 `MoveClickAndReturn(300, -50, 2)` になっている
 - `vrchat_party_macro_skill_ascend_sale_overlord.ahk` は特殊処理で、通常の `DoAction()` ではなく `RunOverlordDungeon()` を使う
 - `vrchat_party_macro_skill_infinite_dungeon.ahk` は無限ダンジョン用で、毎ループでサブスキル2回クリック、Autoスキル有効化、再入場位置クリック、Autoスキル位置戻しを行う
-- `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` は、サブスキル2回クリック、Autoスキル有効化、`dungeonClearIntervalMs` 待機、逃げる、ダンジョン選択を繰り返す。売却は行わず、`ascendIntervalMs` ごとに逃げる、転生、ダンジョン選択を行う
+- `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` は、サブスキル2回クリック、Autoスキル有効化、`dungeonClearIntervalMs` 待機、再入場ボタン1回クリックを繰り返す。売却は行わず、`ascendIntervalMs` ごとに逃げる、転生、ダンジョン選択を行う
 - GUIで秒単位の間隔設定とダンジョンボタン位置選択が可能
 - GUI実行時は既知のマクロを閉じてから選択したAHKを起動し、多重起動を避ける
 
@@ -183,7 +183,7 @@ git status -sb
 - `vrchat_party_macro_skill_sale.ahk`: スキル周回 + 売却。転生はコメントアウトで無効化されている箇所がある
 - `vrchat_party_macro_skill_ascend_sale.ahk`: スキル周回 + 転生 + 売却
 - `vrchat_party_macro_skill_ascend_sale_overlord.ahk`: オーバーロード用の特殊周回 + 転生 + 売却 + サブスキル
-- `vrchat_party_macro_skill_ascend_secret_dungeon.ahk`: サブスキル、Autoスキル、待機、逃げる、ダンジョン選択のループ + 転生。売却なし。Autoスキル位置中心
+- `vrchat_party_macro_skill_ascend_secret_dungeon.ahk`: サブスキル、Autoスキル、待機、再入場ボタン1回クリックのループ + 転生。売却なし。Autoスキル位置中心
 - `vrchat_party_macro_skill_infinite_dungeon.ahk`: 無限ダンジョン用。毎ループでサブスキル、Autoスキル、再入場位置クリック、Autoスキル位置戻し
 - `docs/ai_context.md`: AI引き継ぎ用ドキュメント。このファイル
 
@@ -240,6 +240,7 @@ git diff --stat
 
 ## 更新履歴
 
+- 2026-06-29: `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` の通常ループを、逃げる・ダンジョン選択ではなく再入場ボタン1回クリックに変更。転生タイミングのみ逃げる・転生・ダンジョン選択を維持。
 - 2026-06-29: `vrchat_party_macro_skill_secret_dungeon_ascend.ahk` を `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` にリネーム。`dungeonClearIntervalMs` は `4500`、ダンジョンボタン位置は上から1つ目を有効化。
 - 2026-06-29: `dungeonButtonMoveY` に `22 ; 上から4つ目` を追加。GUIのダンジョンボタン位置プルダウンから選択可能。
 - 2026-06-25: Autoスキル位置を中心位置として統一。`EnableAutoSkill()` は位置移動しないようにし、再入場クリックや独自ループは `MoveClickAndReturn()` でAutoスキル位置へ戻る形に変更。

@@ -154,7 +154,7 @@ vrchat_party_macro_skill_infinite_dungeon.ahk
 vrchat_party_macro_skill_sale.ahk
 ```
 
-`vrchat_party_macro_skill_ascend_secret_dungeon.ahk` は、サブスキル（エクスヒール）クリック、Autoスキル有効化、GUIのダンジョンクリア間隔だけ待機、逃げる、ダンジョン選択を繰り返します。売却は行わず、転生だけGUIの転生間隔で実行します。
+`vrchat_party_macro_skill_ascend_secret_dungeon.ahk` は、サブスキル（エクスヒール）クリック、Autoスキル有効化、GUIのダンジョンクリア間隔だけ待機、再入場ボタン1回クリックを繰り返します。売却は行わず、転生だけGUIの転生間隔で実行します。
 
 ## 直接AHKを実行する場合
 

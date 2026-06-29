@@ -87,7 +87,7 @@ RunLoop()
 }
 
 ; =========================
-; Subskill, Auto skill, wait, escape, dungeon select
+; Subskill, Auto skill, wait, reentry
 ; =========================
 RunSecretDungeonAction()
 {
@@ -112,15 +112,15 @@ RunSecretDungeonAction()
     if (ShouldRunAscendAction())
         return RunEscapeAscendDungeonAction()
 
-    return RunEscapeDungeonAction()
+    return RunReentryAction()
 }
 
 ; =========================
-; Escape, dungeon select
+; Reentry
 ; =========================
-RunEscapeDungeonAction()
+RunReentryAction()
 {
-    global running, topLeftMoveX, topLeftMoveY, dungeonLeftMoveX, dungeonLeftMoveY, vrchatTitle
+    global running, topLeftMoveX, topLeftMoveY, vrchatTitle
 
     if (!running)
         return false
@@ -128,10 +128,7 @@ RunEscapeDungeonAction()
     try WinActivate vrchatTitle
     Sleep 100
 
-    if (!MoveClickAndReturn(-topLeftMoveX, topLeftMoveY, 1))
-        return false
-
-    if (!MoveClickAndReturn(dungeonLeftMoveX, -dungeonLeftMoveY, 1))
+    if (!MoveClickAndReturn(-topLeftMoveX, -topLeftMoveY, 1))
         return false
 
     return running
