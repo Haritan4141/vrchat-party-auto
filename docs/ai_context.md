@@ -30,22 +30,18 @@ python -m py_compile .\vrchat_party_macro_gui.py
 
 ## 現在の作業目的
 
-直近の依頼は、Autoスキル位置を全マクロの中心位置として統一し、転生・売却・再入場などの各クリック操作がAutoスキル位置から開始してAutoスキル位置へ戻るようにすることです。
+直近の依頼は、`vrchat_party_macro_skill.ahk` とほぼ同じ構成で、再入場クリックだけを2回から1回へ変更した `vrchat_party_macro_skill_Vclass_minion_laps.ahk` を追加することです。
 
 最終的に達成したい状態:
 
-- `EnableAutoSkill()` はAutoスキルをクリックするだけで、再入場位置へ移動しない
-- `DoAction()` はAutoスキル位置から再入場位置へ一時移動してクリックし、Autoスキル位置へ戻る
-- `DoSaleAction()` / `DoAscendAction()` はAutoスキル位置開始・Autoスキル位置終了の動作として扱う
-- 独自ループのオーバーロード、無限ダンジョン、シークレットダンジョンもAutoスキル位置中心に揃える
+- 新規マクロがGUIのAHK候補に表示される
+- F8/F9などの基本操作は通常周回マクロに揃える
+- `dungeonClearIntervalMs` 待機後、再入場ボタンを1回クリックしてAutoスキル位置へ戻る
+- `vrchat_party_macro_common_config.ahk` は環境差分になりやすいため、今回の変更に含めない
 
 変更対象:
 
-- `vrchat_party_macro_common_actions.ahk`
-- `vrchat_party_macro_common_interval_actions.ahk`
-- `vrchat_party_macro_skill_ascend_sale_overlord.ahk`
-- `vrchat_party_macro_skill_infinite_dungeon.ahk`
-- `vrchat_party_macro_skill_ascend_secret_dungeon.ahk`
+- `vrchat_party_macro_skill_Vclass_minion_laps.ahk`
 - `README.md`
 - `docs/ai_context.md`
 
@@ -60,6 +56,7 @@ python -m py_compile .\vrchat_party_macro_gui.py
 - Autoスキル位置を中心位置として扱う方針に変更済み
 - `EnableAutoSkill()` はAutoスキルをクリックするだけで、カーソル位置はAutoスキル位置に維持する
 - `DoAction()` はAutoスキル位置から再入場位置へ一時移動してクリックし、Autoスキル位置へ戻る
+- `vrchat_party_macro_skill_Vclass_minion_laps.ahk` は通常周回と同系統だが、再入場ボタンを1回だけクリックする
 - `DoSaleAction()` / `DoAscendAction()` はAutoスキル位置開始・Autoスキル位置終了を前提にする
 - `ReturnPositionToAutoSkill()` は残しているが、通常の転生・売却・独自ループからは呼び出さない
 - `MoveClickAndReturn(dx, dy, clickCount, moveMs)` により、移動、クリック、戻りを共通化済み
@@ -179,6 +176,7 @@ git status -sb
 - `vrchat_party_macro_common_actions.ahk`: Autoスキル有効化、位置戻し、通常メイン動作、クリック/移動/待機の共通関数
 - `vrchat_party_macro_common_interval_actions.ahk`: 売却アクション、転生アクション
 - `vrchat_party_macro_skill.ahk`: スキル通常周回
+- `vrchat_party_macro_skill_Vclass_minion_laps.ahk`: Vclass minion向け通常周回。再入場ボタン1回クリック
 - `vrchat_party_macro_skill_ascend.ahk`: スキル周回 + 転生
 - `vrchat_party_macro_skill_sale.ahk`: スキル周回 + 売却。転生はコメントアウトで無効化されている箇所がある
 - `vrchat_party_macro_skill_ascend_sale.ahk`: スキル周回 + 転生 + 売却
@@ -240,6 +238,7 @@ git diff --stat
 
 ## 更新履歴
 
+- 2026-06-30: `vrchat_party_macro_skill_Vclass_minion_laps.ahk` を追加。通常周回と同じ構成で、再入場ボタンは1回クリック。
 - 2026-06-29: `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` の通常ループを、逃げる・ダンジョン選択ではなく再入場ボタン1回クリックに変更。転生タイミングのみ逃げる・転生・ダンジョン選択を維持。
 - 2026-06-29: `vrchat_party_macro_skill_secret_dungeon_ascend.ahk` を `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` にリネーム。`dungeonClearIntervalMs` は `4500`、ダンジョンボタン位置は上から1つ目を有効化。
 - 2026-06-29: `dungeonButtonMoveY` に `22 ; 上から4つ目` を追加。GUIのダンジョンボタン位置プルダウンから選択可能。

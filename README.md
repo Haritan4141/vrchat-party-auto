@@ -146,6 +146,7 @@ DoAscendAction(true)
 
 ```text
 vrchat_party_macro_skill.ahk
+vrchat_party_macro_skill_Vclass_minion_laps.ahk
 vrchat_party_macro_skill_ascend.ahk
 vrchat_party_macro_skill_ascend_sale.ahk
 vrchat_party_macro_skill_ascend_sale_overlord.ahk
@@ -155,6 +156,8 @@ vrchat_party_macro_skill_sale.ahk
 ```
 
 `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` は、サブスキル（エクスヒール）クリック、Autoスキル有効化、GUIのダンジョンクリア間隔だけ待機、再入場ボタン1回クリックを繰り返します。売却は行わず、転生だけGUIの転生間隔で実行します。
+
+`vrchat_party_macro_skill_Vclass_minion_laps.ahk` は、通常周回マクロと同じ構成で、GUIのダンジョンクリア間隔だけ待機したあと、再入場ボタンを1回だけクリックします。
 
 ## 直接AHKを実行する場合
 
