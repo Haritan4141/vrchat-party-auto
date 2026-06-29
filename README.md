@@ -107,7 +107,7 @@ dungeonButtonMoveY := 130   ; 上から1つ目
 ;dungeonButtonMoveX := 80    ; 上から4つ目
 ;dungeonButtonMoveY := 22     ; 上から4つ目
 ;dungeonButtonMoveX := -80   ; 永傷の女王:V級
-;dungeonButtonMoveY := 22    ; 永傷の女王:V級
+;dungeonButtonMoveY := 25    ; 永傷の女王:V級
 dungeonLeftMoveX := dungeonButtonMoveX
 dungeonLeftMoveY := dungeonButtonMoveY
 ```

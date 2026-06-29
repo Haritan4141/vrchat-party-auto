@@ -38,7 +38,7 @@ python -m py_compile .\vrchat_party_macro_gui.py
 - F8/F9/F7などの基本操作は転生マクロに揃える
 - `dungeonClearIntervalMs` 待機後、再入場ボタンを1回クリックしてAutoスキル位置へ戻る
 - `ascendIntervalMs` ごとに `DoAscendAction()` を実行する
-- ダンジョンボタン位置候補をX/Yペア化し、`永傷の女王:V級` を `x=-80`, `y=22` で追加する
+- ダンジョンボタン位置候補をX/Yペア化し、`永傷の女王:V級` を `x=-80`, `y=25` で追加する
 
 変更対象:
 
@@ -99,7 +99,7 @@ python -m py_compile .\vrchat_party_macro_gui.py
 - `README.md` の共通設定例が現在の `vrchat_party_macro_common_config.ahk` と一致しているか確認する
   - README例: `dungeonClearIntervalMs := 4500`, `topLeftMoveY := 38`
   - 現在の設定: `dungeonClearIntervalMs := 4500`, `topLeftMoveY := 38`, `ascendIntervalMs := 300000`
-  - ダンジョンボタン位置候補: 上から1つ目 `(80, 130)`, 上から2つ目 `(80, 98)`, 上から3つ目 `(80, 60)`, 上から4つ目 `(80, 22)`, 永傷の女王:V級 `(-80, 22)`
+  - ダンジョンボタン位置候補: 上から1つ目 `(80, 130)`, 上から2つ目 `(80, 98)`, 上から3つ目 `(80, 60)`, 上から4つ目 `(80, 22)`, 永傷の女王:V級 `(-80, 25)`
 - GUIのAHK候補に新規追加ファイルが必要になった場合、`macro_files()` の抽出条件で表示されるか確認する
 - サブスキルON専用の `skill_ascend_sale` 派生ファイルが必要な場合は、ファイル作成、検証、README更新、push要否を確認する
 
@@ -244,7 +244,7 @@ git diff --stat
 
 ## 更新履歴
 
-- 2026-06-30: `vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk` を追加。ダンジョンボタン位置をX/Yペア化し、`永傷の女王:V級` を `(-80, 22)` で追加。
+- 2026-06-30: `vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk` を追加。ダンジョンボタン位置をX/Yペア化し、`永傷の女王:V級` を `(-80, 25)` で追加。
 - 2026-06-30: `vrchat_party_macro_skill_Vclass_minion_laps.ahk` を追加。通常周回と同じ構成で、再入場ボタンは1回クリック。
 - 2026-06-29: `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` の通常ループを、逃げる・ダンジョン選択ではなく再入場ボタン1回クリックに変更。転生タイミングのみ逃げる・転生・ダンジョン選択を維持。
 - 2026-06-29: `vrchat_party_macro_skill_secret_dungeon_ascend.ahk` を `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` にリネーム。`dungeonClearIntervalMs` は `4500`、ダンジョンボタン位置は上から1つ目を有効化。
