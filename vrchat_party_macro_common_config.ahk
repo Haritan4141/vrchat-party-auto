@@ -8,6 +8,10 @@ topLeftMoveX := 60       ; Autoスキルから再入場までの量X
 topLeftMoveY := 38       ; Autoスキルから再入場までの量Y
 ascendLeftMoveX := 950   ; 転生ボタン方向に動かす量X
 ascendLeftMoveY := 45    ; 転生ボタン方向に動かす量Y
+mainSkillMoveX := 80     ; Autoスキルからメインスキルボタンまでの量X（暫定）
+mainSkillMoveY := -50    ; Autoスキルからメインスキルボタンまでの量Y（暫定）
+subSkillMoveX := 300     ; Autoスキルからサブスキル（エクスヒール）ボタンまでの量X
+subSkillMoveY := -50     ; Autoスキルからサブスキル（エクスヒール）ボタンまでの量Y
 ; ダンジョンボタン位置
 ;dungeonButtonMoveX := 80    ; 上から1つ目
 ;dungeonButtonMoveY := 130   ; 上から1つ目
@@ -24,5 +28,6 @@ dungeonLeftMoveY := dungeonButtonMoveY
 
 clickHoldMs := 60        ; クリックを押している時間
 betweenClickMs := 300    ; ダブルクリック間隔
+infiniteDungeonSkillBetweenClickMs := 80  ; 無限ダンジョン交互スキルのクリック後待機
 moveStepMs := 16         ; マウス移動の刻み
 vrchatTitle := "VRChat"

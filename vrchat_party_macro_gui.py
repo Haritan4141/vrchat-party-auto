@@ -207,7 +207,9 @@ class MacroConfigApp(tk.Tk):
     def __init__(self) -> None:
         super().__init__()
         self.title("VRChat Party Macro Config")
-        self.resizable(False, False)
+        self.geometry("820x300")
+        self.minsize(820, 300)
+        self.resizable(True, False)
 
         self.autohotkey_exe = find_autohotkey()
         self.macro_paths = macro_files()
@@ -236,6 +238,8 @@ class MacroConfigApp(tk.Tk):
         padding = {"padx": 10, "pady": 6}
         root = ttk.Frame(self, padding=12)
         root.grid(row=0, column=0, sticky="nsew")
+        self.columnconfigure(0, weight=1)
+        root.columnconfigure(1, weight=1)
 
         ttk.Label(root, text="ダンジョンクリア間隔 (秒)").grid(row=0, column=0, sticky="w", **padding)
         ttk.Entry(root, textvariable=self.dungeon_var, width=18).grid(row=0, column=1, sticky="ew", **padding)
@@ -261,7 +265,7 @@ class MacroConfigApp(tk.Tk):
             root,
             textvariable=self.ahk_var,
             values=[path.name for path in self.macro_paths],
-            width=40,
+            width=70,
             state="readonly",
         )
         combo.grid(row=4, column=1, sticky="ew", **padding)

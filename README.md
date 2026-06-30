@@ -89,8 +89,13 @@ topLeftMoveX := 60       ; Autoスキルから再入場までの量X
 topLeftMoveY := 38       ; Autoスキルから再入場までの量Y
 ascendLeftMoveX := 950   ; 転生ボタン方向に動かす量X
 ascendLeftMoveY := 45    ; 転生ボタン方向に動かす量Y
+mainSkillMoveX := 80     ; Autoスキルからメインスキルボタンまでの量X（暫定）
+mainSkillMoveY := -50    ; Autoスキルからメインスキルボタンまでの量Y（暫定）
+subSkillMoveX := 300     ; Autoスキルからサブスキル（エクスヒール）ボタンまでの量X
+subSkillMoveY := -50     ; Autoスキルからサブスキル（エクスヒール）ボタンまでの量Y
 clickHoldMs := 60        ; クリックを押している時間
 betweenClickMs := 300    ; ダブルクリック間隔
+infiniteDungeonSkillBetweenClickMs := 80  ; 無限ダンジョン交互スキルのクリック後待機
 moveStepMs := 16         ; マウス移動の刻み
 vrchatTitle := "VRChat"
 ```
@@ -142,7 +147,7 @@ vrchat_party_macro_common_interval_actions.ahk
 
 これらは部品ファイルなので、直接実行せず、マクロ本体の `.ahk` を実行してください。GUIの実行候補にも表示されません。
 
-各マクロはAutoスキル位置を中心位置として扱います。再入場、逃げる、転生、売却、ダンジョン選択、サブスキルは、Autoスキル位置から一時的に移動してクリックし、クリック後はAutoスキル位置へ戻ります。
+各マクロはAutoスキル位置を中心位置として扱います。再入場、逃げる、転生、売却、ダンジョン選択、メインスキル、サブスキルは、Autoスキル位置から一時的に移動してクリックし、クリック後はAutoスキル位置へ戻ります。例外として、`vrchat_party_macro_skill_infinite_dungeon.ahk` は初回だけAutoスキル位置を起点にし、その後はメインスキル位置とサブスキル位置を直接行き来します。
 
 `DoSaleAction()` と `DoAscendAction()` は、引数に `true` を渡すとダンジョン選択後にサブスキル（エクスヒール）をクリックします。引数なしの場合は従来通りサブスキルを使いません。
 
@@ -162,6 +167,7 @@ vrchat_party_macro_skill_ascend_sale.ahk
 vrchat_party_macro_skill_ascend_sale_overlord.ahk
 vrchat_party_macro_skill_ascend_secret_dungeon.ahk
 vrchat_party_macro_skill_infinite_dungeon.ahk
+vrchat_party_macro_skill_infinite_dungeon_laps.ahk
 vrchat_party_macro_skill_sale.ahk
 ```
 
@@ -170,6 +176,8 @@ vrchat_party_macro_skill_sale.ahk
 `vrchat_party_macro_skill_Vclass_minion_laps.ahk` は、通常周回マクロと同じ構成で、GUIのダンジョンクリア間隔だけ待機したあと、再入場ボタンを1回だけクリックします。
 
 `vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk` は、`vrchat_party_macro_skill_Vclass_minion_laps.ahk` に転生ロジックを追加したマクロです。
+
+`vrchat_party_macro_skill_infinite_dungeon.ahk` は、初回だけAutoスキル位置を起点にし、その後はメインスキルとサブスキルを直接行き来して交互に1回ずつクリックします。
 
 ## 直接AHKを実行する場合
 

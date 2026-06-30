@@ -65,7 +65,7 @@ DoSaleAction(useSubSkill := false)
 
     if (useSubSkill) {
         ; サブスキル（エクスヒール）ボタンクリック
-        if (!MoveClickAndReturn(300, -50, 2))
+        if (!ClickSubSkill(2))
             return
     }
 
@@ -101,7 +101,7 @@ DoAscendAction(useSubSkill := false)
 
     if (useSubSkill) {
         ; サブスキル（エクスヒール）ボタンクリック
-        if (!MoveClickAndReturn(300, -50, 2))
+        if (!ClickSubSkill(2))
             return
     }
 

@@ -7,6 +7,10 @@ if (A_LineFile = A_ScriptFullPath) {
     clickHoldMs := 0
     betweenClickMs := 0
     dungeonClearIntervalMs := 0
+    mainSkillMoveX := 0
+    mainSkillMoveY := 0
+    subSkillMoveX := 0
+    subSkillMoveY := 0
     vrchatTitle := ""
     MsgBox "This file is shared parts. Run a macro .ahk file."
     ExitApp
@@ -32,6 +36,26 @@ EnableAutoSkill()
         return false
 
     return running
+}
+
+; =========================
+; メインスキルボタンクリック
+; Autoスキル位置を中心位置として維持する
+; =========================
+ClickMainSkill(clickCount := 1)
+{
+    global mainSkillMoveX, mainSkillMoveY
+    return MoveClickAndReturn(mainSkillMoveX, mainSkillMoveY, clickCount)
+}
+
+; =========================
+; サブスキルボタンクリック
+; Autoスキル位置を中心位置として維持する
+; =========================
+ClickSubSkill(clickCount := 1)
+{
+    global subSkillMoveX, subSkillMoveY
+    return MoveClickAndReturn(subSkillMoveX, subSkillMoveY, clickCount)
 }
 
 ; =========================

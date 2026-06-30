@@ -1,4 +1,4 @@
-﻿#Requires AutoHotkey v2.0
+#Requires AutoHotkey v2.0
 #SingleInstance Force
 SendMode "Input"
 SetTitleMatchMode 2
@@ -11,6 +11,8 @@ CoordMode "Mouse", "Client"
 ; 状態
 ; =========================
 global running := false
+global currentSkillMoveX := 0
+global currentSkillMoveY := 0
 
 #Include "vrchat_party_macro_common_actions.ahk"
 
@@ -19,10 +21,12 @@ global running := false
 ; =========================
 F8::
 {
-    global running
+    global running, currentSkillMoveX, currentSkillMoveY
     running := !running
 
     if (running) {
+        currentSkillMoveX := 0
+        currentSkillMoveY := 0
         ToolTip "Macro: ON"
         SetTimer RunLoop, -1
     } else {
@@ -56,35 +60,55 @@ RunLoop()
         return
 
     while (running) {
-        ; サブスキル（エクスヒール）ボタンクリック
-        if (!MoveClickAndReturn(300, -50, 2))
-            return
-
-        if (!EnableAutoSkill())
-            return
-
-        RunInfiniteDungeonAction()
-
+        RunAlternatingSkillAction()
         Sleep 50
     }
 }
 
 ; =========================
-; 無限ダンジョン動作
-; ダンジョンクリア間隔待機、1回クリック
+; メインスキルとサブスキルを交互にクリック
 ; =========================
-RunInfiniteDungeonAction()
+RunAlternatingSkillAction()
 {
-    global running, dungeonClearIntervalMs, topLeftMoveX, topLeftMoveY, vrchatTitle
+    global running, mainSkillMoveX, mainSkillMoveY, subSkillMoveX, subSkillMoveY, vrchatTitle
+
+    if (!running)
+        return false
 
     try WinActivate vrchatTitle
     Sleep 100
 
-    ; ダンジョンクリア待ち時間
-    SleepInterruptible(dungeonClearIntervalMs)
-    if (!running)
-        return
+    if (!MoveToSkillAndClick(mainSkillMoveX, mainSkillMoveY))
+        return false
 
-    ; クリック
-    MoveClickAndReturn(-topLeftMoveX, -topLeftMoveY, 1)
+    if (!MoveToSkillAndClick(subSkillMoveX, subSkillMoveY))
+        return false
+
+    return running
+}
+
+; =========================
+; 現在位置から指定スキル位置へ移動してクリック
+; 初回だけAutoスキル位置を起点にする
+; =========================
+MoveToSkillAndClick(targetMoveX, targetMoveY)
+{
+    global running, currentSkillMoveX, currentSkillMoveY, clickHoldMs, infiniteDungeonSkillBetweenClickMs
+
+    if (!running)
+        return false
+
+    dx := targetMoveX - currentSkillMoveX
+    dy := targetMoveY - currentSkillMoveY
+    SmoothMouseMoveRel(dx, dy, 250)
+    if (!running)
+        return false
+
+    currentSkillMoveX := targetMoveX
+    currentSkillMoveY := targetMoveY
+
+    LeftClick(clickHoldMs)
+    SleepInterruptible(infiniteDungeonSkillBetweenClickMs)
+
+    return running
 }

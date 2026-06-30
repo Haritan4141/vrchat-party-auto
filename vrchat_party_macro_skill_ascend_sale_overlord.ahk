@@ -140,7 +140,7 @@ RunOverlordDungeon()
         return
 
     ; サブスキル（エクスヒール）ボタンクリック
-    if (!MoveClickAndReturn(300, -50, 1))
+    if (!ClickSubSkill(1))
         return
 
     ; Autoスキル有効化

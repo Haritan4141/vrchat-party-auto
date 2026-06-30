@@ -99,7 +99,7 @@ RunSecretDungeonAction()
     try WinActivate vrchatTitle
     Sleep 100
 
-    if (!MoveClickAndReturn(300, -50, 2))
+    if (!ClickSubSkill(2))
         return false
 
     if (!EnableAutoSkill())
