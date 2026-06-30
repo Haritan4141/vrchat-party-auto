@@ -7,6 +7,10 @@ if (A_LineFile = A_ScriptFullPath) {
     clickHoldMs := 0
     betweenClickMs := 0
     dungeonClearIntervalMs := 0
+    ascendIntervalMs := 0
+    saleIntervalMs := 0
+    lastAscendActionTick := 0
+    lastSaleActionTick := 0
     ascendLeftMoveX := 0
     ascendLeftMoveY := 0
     dungeonLeftMoveX := 0
@@ -17,6 +21,53 @@ if (A_LineFile = A_ScriptFullPath) {
 }
 
 #Include "vrchat_party_macro_common_actions.ahk"
+
+; These are normally assigned by vrchat_party_macro_common_config.ahk before this file is included.
+; Guarded defaults keep #Warn quiet without overwriting config values.
+if (!IsSet(ascendIntervalMs))
+    ascendIntervalMs := 0
+if (!IsSet(saleIntervalMs))
+    saleIntervalMs := 0
+
+ResetAscendActionTimer()
+{
+    global lastAscendActionTick
+    lastAscendActionTick := A_TickCount
+}
+
+ResetSaleActionTimer()
+{
+    global lastSaleActionTick
+    lastSaleActionTick := A_TickCount
+}
+
+RunAscendActionIfDue(useSubSkill := false)
+{
+    global running, lastAscendActionTick, ascendIntervalMs
+
+    if (!running)
+        return
+
+    if (A_TickCount - lastAscendActionTick < ascendIntervalMs)
+        return
+
+    lastAscendActionTick := A_TickCount
+    DoAscendAction(useSubSkill)
+}
+
+RunSaleActionIfDue(useSubSkill := false)
+{
+    global running, lastSaleActionTick, saleIntervalMs
+
+    if (!running)
+        return
+
+    if (A_TickCount - lastSaleActionTick < saleIntervalMs)
+        return
+
+    lastSaleActionTick := A_TickCount
+    DoSaleAction(useSubSkill)
+}
 
 ; =========================
 ; 売却アクション

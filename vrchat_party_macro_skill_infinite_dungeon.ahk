@@ -93,7 +93,8 @@ RunAlternatingSkillAction()
 ; =========================
 MoveToSkillAndClick(targetMoveX, targetMoveY)
 {
-    global running, currentSkillMoveX, currentSkillMoveY, clickHoldMs, infiniteDungeonSkillBetweenClickMs
+    global running, currentSkillMoveX, currentSkillMoveY, clickHoldMs
+    global afterMoveClickWaitMs, infiniteDungeonSkillBetweenClickMs
 
     if (!running)
         return false
@@ -101,6 +102,10 @@ MoveToSkillAndClick(targetMoveX, targetMoveY)
     dx := targetMoveX - currentSkillMoveX
     dy := targetMoveY - currentSkillMoveY
     SmoothMouseMoveRel(dx, dy, 250)
+    if (!running)
+        return false
+
+    SleepInterruptible(afterMoveClickWaitMs)
     if (!running)
         return false
 

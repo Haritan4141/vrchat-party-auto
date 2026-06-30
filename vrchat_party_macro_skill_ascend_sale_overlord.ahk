@@ -109,8 +109,8 @@ RunLoop()
 
     while (running) {
         RunOverlordDungeon()
-        RunAscendActionIfDue()
-        RunSaleActionIfDue()
+        RunAscendActionIfDue(true)
+        RunSaleActionIfDue(true)
         Sleep 50
     }
 }
@@ -149,42 +149,3 @@ RunOverlordDungeon()
 
 }
 
-ResetAscendActionTimer()
-{
-    global lastAscendActionTick
-    lastAscendActionTick := A_TickCount
-}
-
-ResetSaleActionTimer()
-{
-    global lastSaleActionTick
-    lastSaleActionTick := A_TickCount
-}
-
-RunAscendActionIfDue()
-{
-    global running, lastAscendActionTick, ascendIntervalMs
-
-    if (!running)
-        return
-
-    if (A_TickCount - lastAscendActionTick < ascendIntervalMs)
-        return
-
-    lastAscendActionTick := A_TickCount
-    DoAscendAction(true)
-}
-
-RunSaleActionIfDue()
-{
-    global running, lastSaleActionTick, saleIntervalMs
-
-    if (!running)
-        return
-
-    if (A_TickCount - lastSaleActionTick < saleIntervalMs)
-        return
-
-    lastSaleActionTick := A_TickCount
-    DoSaleAction(true)
-}

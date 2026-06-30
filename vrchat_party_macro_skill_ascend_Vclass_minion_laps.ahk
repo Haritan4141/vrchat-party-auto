@@ -83,45 +83,8 @@ RunLoop()
         return
 
     while (running) {
-        RunVclassMinionLapAction()
+        DoAction(1)
         RunAscendActionIfDue()
         Sleep 50
     }
-}
-
-; =========================
-; Wait, click reentry once, return to Auto skill position
-; =========================
-RunVclassMinionLapAction()
-{
-    global running, dungeonClearIntervalMs, topLeftMoveX, topLeftMoveY, vrchatTitle
-
-    try WinActivate vrchatTitle
-    Sleep 100
-
-    SleepInterruptible(dungeonClearIntervalMs)
-    if (!running)
-        return
-
-    MoveClickAndReturn(-topLeftMoveX, -topLeftMoveY, 1)
-}
-
-ResetAscendActionTimer()
-{
-    global lastAscendActionTick
-    lastAscendActionTick := A_TickCount
-}
-
-RunAscendActionIfDue()
-{
-    global running, lastAscendActionTick, ascendIntervalMs
-
-    if (!running)
-        return
-
-    if (A_TickCount - lastAscendActionTick < ascendIntervalMs)
-        return
-
-    lastAscendActionTick := A_TickCount
-    DoAscendAction()
 }

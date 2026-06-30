@@ -6,6 +6,7 @@ if (A_LineFile = A_ScriptFullPath) {
     topLeftMoveY := 0
     clickHoldMs := 0
     betweenClickMs := 0
+    afterMoveClickWaitMs := 0
     dungeonClearIntervalMs := 0
     mainSkillMoveX := 0
     mainSkillMoveY := 0
@@ -75,11 +76,11 @@ ReturnPositionToAutoSkill()
 
 ; =========================
 ; メイン動作
-; ダンジョンクリア間隔待機、再入場を2回クリック、Autoスキル位置へ戻る
+; ダンジョンクリア間隔待機、再入場ボタンをクリック、Autoスキル位置へ戻る
 ; =========================
-DoAction()
+DoAction(reentryClickCount := 2)
 {
-    global running, dungeonClearIntervalMs, topLeftMoveX, topLeftMoveY, vrchatTitle
+    global running, dungeonClearIntervalMs, vrchatTitle
 
     try WinActivate vrchatTitle
     Sleep 100
@@ -89,8 +90,18 @@ DoAction()
     if (!running)
         return
 
-    ; ダブルクリック(再入場)
-    MoveClickAndReturn(-topLeftMoveX, -topLeftMoveY, 2)
+    ClickReentryButton(reentryClickCount)
+}
+
+; =========================
+; 再入場ボタンクリック
+; clickCount = 2: 同じ位置のボタン表示が「調べる」→「再入場」に変わるパターン
+; clickCount = 1: 「調べる」が出ず、最初から「再入場」のみを押すパターン
+; =========================
+ClickReentryButton(clickCount := 2)
+{
+    global topLeftMoveX, topLeftMoveY
+    return MoveClickAndReturn(-topLeftMoveX, -topLeftMoveY, clickCount)
 }
 
 LeftClick(holdMs := 60)
@@ -102,12 +113,16 @@ LeftClick(holdMs := 60)
 
 MoveClickAndReturn(dx, dy, clickCount := 1, moveMs := 250)
 {
-    global running, clickHoldMs, betweenClickMs
+    global running, clickHoldMs, betweenClickMs, afterMoveClickWaitMs
 
     if (!running)
         return false
 
     SmoothMouseMoveRel(dx, dy, moveMs)
+    if (!running)
+        return false
+
+    SleepInterruptible(afterMoveClickWaitMs)
     if (!running)
         return false
 

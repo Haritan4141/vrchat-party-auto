@@ -39,6 +39,34 @@ class DungeonButtonOption:
     active: bool
 
 
+@dataclass(frozen=True)
+class MacroCapabilities:
+    uses_dungeon_clear_interval: bool
+    uses_ascend_interval: bool
+    uses_sale_interval: bool
+    uses_dungeon_button_position: bool
+
+
+def macro_capabilities(path: Path | None) -> MacroCapabilities:
+    if path is None:
+        return MacroCapabilities(
+            uses_dungeon_clear_interval=True,
+            uses_ascend_interval=True,
+            uses_sale_interval=True,
+            uses_dungeon_button_position=True,
+        )
+
+    name = path.name.lower()
+    uses_ascend = "_ascend" in name
+    uses_sale = "_sale" in name
+    return MacroCapabilities(
+        uses_dungeon_clear_interval=name != "vrchat_party_macro_skill_infinite_dungeon.ahk",
+        uses_ascend_interval=uses_ascend,
+        uses_sale_interval=uses_sale,
+        uses_dungeon_button_position=uses_ascend or uses_sale,
+    )
+
+
 def ms_to_seconds_text(ms: int) -> str:
     seconds = (Decimal(ms) / Decimal(1000)).quantize(SECONDS_DECIMAL_PLACES)
     return format(seconds.normalize(), "f")
@@ -222,6 +250,7 @@ class MacroConfigApp(tk.Tk):
         self.dungeon_button_var = tk.StringVar()
         self.ahk_var = tk.StringVar()
         self.selected_ahk_path: Path | None = None
+        self.interval_entries: dict[str, ttk.Entry] = {}
         self.status_var = tk.StringVar()
 
         self._build_ui()
@@ -242,13 +271,21 @@ class MacroConfigApp(tk.Tk):
         root.columnconfigure(1, weight=1)
 
         ttk.Label(root, text="ダンジョンクリア間隔 (秒)").grid(row=0, column=0, sticky="w", **padding)
-        ttk.Entry(root, textvariable=self.dungeon_var, width=18).grid(row=0, column=1, sticky="ew", **padding)
+        self.dungeon_entry = ttk.Entry(root, textvariable=self.dungeon_var, width=18)
+        self.dungeon_entry.grid(row=0, column=1, sticky="ew", **padding)
 
         ttk.Label(root, text="転生間隔 (秒)").grid(row=1, column=0, sticky="w", **padding)
-        ttk.Entry(root, textvariable=self.ascend_var, width=18).grid(row=1, column=1, sticky="ew", **padding)
+        self.ascend_entry = ttk.Entry(root, textvariable=self.ascend_var, width=18)
+        self.ascend_entry.grid(row=1, column=1, sticky="ew", **padding)
 
         ttk.Label(root, text="売却間隔 (秒)").grid(row=2, column=0, sticky="w", **padding)
-        ttk.Entry(root, textvariable=self.sale_var, width=18).grid(row=2, column=1, sticky="ew", **padding)
+        self.sale_entry = ttk.Entry(root, textvariable=self.sale_var, width=18)
+        self.sale_entry.grid(row=2, column=1, sticky="ew", **padding)
+        self.interval_entries = {
+            "dungeonClearIntervalMs": self.dungeon_entry,
+            "ascendIntervalMs": self.ascend_entry,
+            "saleIntervalMs": self.sale_entry,
+        }
 
         ttk.Label(root, text="ダンジョンボタン位置").grid(row=3, column=0, sticky="w", **padding)
         self.dungeon_button_combo = ttk.Combobox(
@@ -290,11 +327,26 @@ class MacroConfigApp(tk.Tk):
     def set_selected_ahk(self, path: Path) -> None:
         self.selected_ahk_path = path
         self.ahk_var.set(path.name)
+        self.update_interval_entry_states()
 
     def on_ahk_selected(self, _event: object | None = None) -> None:
         path = self.macro_by_name.get(self.ahk_var.get())
         if path:
             self.selected_ahk_path = path
+            self.update_interval_entry_states()
+
+    def update_interval_entry_states(self) -> None:
+        capabilities = macro_capabilities(self.selected_ahk_path)
+        states = {
+            "dungeonClearIntervalMs": capabilities.uses_dungeon_clear_interval,
+            "ascendIntervalMs": capabilities.uses_ascend_interval,
+            "saleIntervalMs": capabilities.uses_sale_interval,
+        }
+        for name, is_enabled in states.items():
+            self.interval_entries[name].configure(state="normal" if is_enabled else "disabled")
+        self.dungeon_button_combo.configure(
+            state="readonly" if capabilities.uses_dungeon_button_position else "disabled"
+        )
 
     def browse_ahk(self) -> None:
         selected = filedialog.askopenfilename(
@@ -347,16 +399,24 @@ class MacroConfigApp(tk.Tk):
             "ascendIntervalMs": self.ascend_var.get(),
             "saleIntervalMs": self.sale_var.get(),
         }
-        values = {
-            name: seconds_text_to_ms(raw, labels[name])
-            for name, raw in raw_values.items()
-        }
-        selected_label = self.dungeon_button_var.get()
-        if selected_label not in self.dungeon_button_options:
-            raise ValueError("ダンジョンボタン位置を選択してください。")
-        values["dungeonButtonMoveX"], values["dungeonButtonMoveY"] = (
-            self.dungeon_button_options[selected_label]
-        )
+        current_values = read_config()
+        values: dict[str, int] = {}
+        for name, raw in raw_values.items():
+            entry = self.interval_entries[name]
+            if entry.instate(["disabled"]):
+                values[name] = current_values[name]
+            else:
+                values[name] = seconds_text_to_ms(raw, labels[name])
+        if self.dungeon_button_combo.instate(["disabled"]):
+            values["dungeonButtonMoveX"] = current_values["dungeonButtonMoveX"]
+            values["dungeonButtonMoveY"] = current_values["dungeonButtonMoveY"]
+        else:
+            selected_label = self.dungeon_button_var.get()
+            if selected_label not in self.dungeon_button_options:
+                raise ValueError("ダンジョンボタン位置を選択してください。")
+            values["dungeonButtonMoveX"], values["dungeonButtonMoveY"] = (
+                self.dungeon_button_options[selected_label]
+            )
         return values
 
     def save_only(self) -> bool:

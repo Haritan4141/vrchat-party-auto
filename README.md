@@ -57,6 +57,8 @@ GUIで変更できる設定:
 - 売却間隔
 - ダンジョンボタン位置
 
+実行するAHKに転生や売却ロジックがない場合、対応する間隔欄は非活性になります。転生と売却のどちらもない場合は、ダンジョンボタン位置も非活性になります。`vrchat_party_macro_skill_infinite_dungeon.ahk` はダンジョンクリア間隔も使わないため、ダンジョンクリア間隔、転生間隔、売却間隔、ダンジョンボタン位置が非活性になります。
+
 使い方:
 
 1. 実行するAHKファイルを選択
@@ -95,6 +97,7 @@ subSkillMoveX := 300     ; Autoスキルからサブスキル（エクスヒー�
 subSkillMoveY := -50     ; Autoスキルからサブスキル（エクスヒール）ボタンまでの量Y
 clickHoldMs := 60        ; クリックを押している時間
 betweenClickMs := 300    ; ダブルクリック間隔
+afterMoveClickWaitMs := 50  ; マウス移動後、クリック前の待機
 infiniteDungeonSkillBetweenClickMs := 80  ; 無限ダンジョン交互スキルのクリック後待機
 moveStepMs := 16         ; マウス移動の刻み
 vrchatTitle := "VRChat"
@@ -149,6 +152,8 @@ vrchat_party_macro_common_interval_actions.ahk
 
 各マクロはAutoスキル位置を中心位置として扱います。再入場、逃げる、転生、売却、ダンジョン選択、メインスキル、サブスキルは、Autoスキル位置から一時的に移動してクリックし、クリック後はAutoスキル位置へ戻ります。例外として、`vrchat_party_macro_skill_infinite_dungeon.ahk` は初回だけAutoスキル位置を起点にし、その後はメインスキル位置とサブスキル位置を直接行き来します。
 
+再入場クリックは `DoAction()` で共通化しています。通常は `DoAction()` の2回クリックで、同じ位置のボタン表示が `調べる` から `再入場` に変わるパターンです。`DoAction(1)` は `調べる` が出ず、最初から `再入場` だけを1回クリックするパターンで使います。
+
 `DoSaleAction()` と `DoAscendAction()` は、引数に `true` を渡すとダンジョン選択後にサブスキル（エクスヒール）をクリックします。引数なしの場合は従来通りサブスキルを使いません。
 
 ```ahk
@@ -160,7 +165,6 @@ DoAscendAction(true)
 
 ```text
 vrchat_party_macro_skill.ahk
-vrchat_party_macro_skill_Vclass_minion_laps.ahk
 vrchat_party_macro_skill_ascend.ahk
 vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk
 vrchat_party_macro_skill_ascend_sale.ahk
@@ -173,9 +177,7 @@ vrchat_party_macro_skill_sale.ahk
 
 `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` は、サブスキル（エクスヒール）クリック、Autoスキル有効化、GUIのダンジョンクリア間隔だけ待機、再入場ボタン1回クリックを繰り返します。売却は行わず、転生だけGUIの転生間隔で実行します。
 
-`vrchat_party_macro_skill_Vclass_minion_laps.ahk` は、通常周回マクロと同じ構成で、GUIのダンジョンクリア間隔だけ待機したあと、再入場ボタンを1回だけクリックします。
-
-`vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk` は、`vrchat_party_macro_skill_Vclass_minion_laps.ahk` に転生ロジックを追加したマクロです。
+`vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk` は、GUIのダンジョンクリア間隔だけ待機したあと、再入場ボタンを1回だけクリックし、GUIの転生間隔で転生アクションを実行するマクロです。
 
 `vrchat_party_macro_skill_infinite_dungeon.ahk` は、初回だけAutoスキル位置を起点にし、その後はメインスキルとサブスキルを直接行き来して交互に1回ずつクリックします。
 

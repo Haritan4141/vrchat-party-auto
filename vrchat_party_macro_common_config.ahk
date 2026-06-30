@@ -28,6 +28,7 @@ dungeonLeftMoveY := dungeonButtonMoveY
 
 clickHoldMs := 60        ; クリックを押している時間
 betweenClickMs := 300    ; ダブルクリック間隔
+afterMoveClickWaitMs := 50  ; マウス移動後、クリック前の待機
 infiniteDungeonSkillBetweenClickMs := 80  ; 無限ダンジョン交互スキルのクリック後待機
 moveStepMs := 16         ; マウス移動の刻み
 vrchatTitle := "VRChat"

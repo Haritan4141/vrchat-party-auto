@@ -30,7 +30,7 @@ python -m py_compile .\vrchat_party_macro_gui.py
 
 ## 現在の作業目的
 
-直近の依頼は、`vrchat_party_macro_skill_infinite_dungeon.ahk` を新規作成し、メインスキルとサブスキルを交互にクリックするだけのマクロにすることです。あわせてメインスキル/サブスキル座標を `vrchat_party_macro_common_config.ahk` に集約しています。
+直近の依頼は、リポジトリ全体を共通化方針でレビューし、不要になった `vrchat_party_macro_skill_Vclass_minion_laps.ahk` を削除することです。
 
 最終的に達成したい状態:
 
@@ -46,7 +46,6 @@ python -m py_compile .\vrchat_party_macro_gui.py
 - `vrchat_party_macro_gui.py`
 - `vrchat_party_macro_common_config.ahk`
 - `vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk`
-- `vrchat_party_macro_skill_Vclass_minion_laps.ahk`
 - `vrchat_party_macro_skill_infinite_dungeon.ahk`
 - `README.md`
 - `docs/ai_context.md`
@@ -61,21 +60,22 @@ python -m py_compile .\vrchat_party_macro_gui.py
 - `DoStartAction()` は `EnableAutoSkill()` にリネーム済み
 - Autoスキル位置を中心位置として扱う方針に変更済み
 - `EnableAutoSkill()` はAutoスキルをクリックするだけで、カーソル位置はAutoスキル位置に維持する
-- `DoAction()` はAutoスキル位置から再入場位置へ一時移動してクリックし、Autoスキル位置へ戻る
-- `vrchat_party_macro_skill_Vclass_minion_laps.ahk` は通常周回と同系統だが、再入場ボタンを1回だけクリックする
-- `vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk` は `vrchat_party_macro_skill_Vclass_minion_laps.ahk` に転生ロジックを追加したマクロ
+- `DoAction(reentryClickCount := 2)` はAutoスキル位置から再入場位置へ一時移動してクリックし、Autoスキル位置へ戻る。2回クリックは「調べる」→「再入場」、1回クリックは「再入場」のみのパターン
+- `vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk` は、再入場ボタン1回クリックの通常周回に転生ロジックを追加したマクロ
 - `DoSaleAction()` / `DoAscendAction()` はAutoスキル位置開始・Autoスキル位置終了を前提にする
 - `ReturnPositionToAutoSkill()` は残しているが、通常の転生・売却・独自ループからは呼び出さない
 - `MoveClickAndReturn(dx, dy, clickCount, moveMs)` により、移動、クリック、戻りを共通化済み
+- マウス移動後、クリック前に `afterMoveClickWaitMs := 50` だけ待機する。通常の `MoveClickAndReturn()` と `vrchat_party_macro_skill_infinite_dungeon.ahk` の直接移動クリックの両方に適用
 - `ClickMainSkill(clickCount)` / `ClickSubSkill(clickCount)` により、スキルボタン座標をconfig経由で利用する
 - `DoSaleAction(useSubSkill := false)` / `DoAscendAction(useSubSkill := false)` は、`true` を渡すとサブスキル（エクスヒール）をクリックする
+- `ResetAscendActionTimer()` / `ResetSaleActionTimer()` / `RunAscendActionIfDue()` / `RunSaleActionIfDue()` は `vrchat_party_macro_common_interval_actions.ahk` に共通化済み
 - サブスキル座標は `subSkillMoveX := 300`, `subSkillMoveY := -50`。メインスキル暫定座標は `mainSkillMoveX := 80`, `mainSkillMoveY := -50`
 - `vrchat_party_macro_skill_infinite_dungeon.ahk` のクリック後待機は共通 `betweenClickMs` ではなく `infiniteDungeonSkillBetweenClickMs := 80`
 - `vrchat_party_macro_skill_ascend_sale_overlord.ahk` は特殊処理で、通常の `DoAction()` ではなく `RunOverlordDungeon()` を使う
 - `vrchat_party_macro_skill_infinite_dungeon_laps.ahk` は無限ダンジョン用で、毎ループでサブスキル2回クリック、Autoスキル有効化、再入場位置クリック、Autoスキル位置戻しを行う
 - `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` は、サブスキル2回クリック、Autoスキル有効化、`dungeonClearIntervalMs` 待機、再入場ボタン1回クリックを繰り返す。売却は行わず、`ascendIntervalMs` ごとに逃げる、転生、ダンジョン選択を行う
 - `vrchat_party_macro_skill_infinite_dungeon.ahk` は、初回だけAutoスキル位置を起点にし、その後はメインスキル位置とサブスキル位置を直接行き来して交互に1回ずつクリックする。転生/売却なし
-- GUIで秒単位の間隔設定とダンジョンボタン位置選択が可能
+- GUIで秒単位の間隔設定とダンジョンボタン位置選択が可能。選択したAHKに応じて未使用のダンジョンクリア/転生/売却間隔欄とダンジョンボタン位置を非活性化する
 - GUI実行時は既知のマクロを閉じてから選択したAHKを起動し、多重起動を避ける
 
 調査して分かったこと:
@@ -186,7 +186,6 @@ git status -sb
 - `vrchat_party_macro_common_actions.ahk`: Autoスキル有効化、位置戻し、通常メイン動作、クリック/移動/待機の共通関数
 - `vrchat_party_macro_common_interval_actions.ahk`: 売却アクション、転生アクション
 - `vrchat_party_macro_skill.ahk`: スキル通常周回
-- `vrchat_party_macro_skill_Vclass_minion_laps.ahk`: Vclass minion向け通常周回。再入場ボタン1回クリック
 - `vrchat_party_macro_skill_ascend.ahk`: スキル周回 + 転生
 - `vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk`: Vclass minion向け通常周回 + 転生。再入場ボタン1回クリック
 - `vrchat_party_macro_skill_sale.ahk`: スキル周回 + 売却。転生はコメントアウトで無効化されている箇所がある
@@ -250,6 +249,11 @@ git diff --stat
 
 ## 更新履歴
 
+- 2026-07-01: クリック抜け対策として `afterMoveClickWaitMs := 50` を追加。マウス移動後、クリック前に短く待つように `MoveClickAndReturn()` と `vrchat_party_macro_skill_infinite_dungeon.ahk` の専用クリック処理へ適用。
+- 2026-07-01: 再入場処理を `DoAction(reentryClickCount)` / `ClickReentryButton(clickCount)` に共通化。2回クリックは「調べる」→「再入場」、1回クリックは「再入場」のみのパターンとしてコメントを追加。転生/売却タイマー関数も共通化し、売却専用マクロから転生テストと転生タイマー残骸を削除。`common_interval_actions` 側にconfig値を上書きしないguarded defaultを置き、`#Warn` の未代入警告を回避。
+- 2026-07-01: 共通化レビューにあわせて不要になった `vrchat_party_macro_skill_Vclass_minion_laps.ahk` を削除。READMEと引き継ぎメモの一覧・説明を更新。
+- 2026-07-01: GUIで `_ascend` と `_sale` のどちらも含まないマクロを選択した場合、ダンジョンボタン位置プルダウンも非活性化。保存時は現在のconfig値を維持。
+- 2026-07-01: GUIで選択中AHKに応じて未使用の間隔欄を非活性化。`_ascend` を含むマクロだけ転生間隔、`_sale` を含むマクロだけ売却間隔を有効化し、`vrchat_party_macro_skill_infinite_dungeon.ahk` はダンジョンクリア間隔も無効化。
 - 2026-07-01: `vrchat_party_macro_skill_infinite_dungeon.ahk` だけクリック後待機を短縮。専用設定 `infiniteDungeonSkillBetweenClickMs := 80` を追加し、共通 `betweenClickMs` から切り離した。
 - 2026-07-01: `vrchat_party_macro_skill_infinite_dungeon.ahk` を、毎回Autoスキル位置へ戻さず、初回Auto起点後はメインスキル/サブスキル間を直接往復する動作に変更。
 - 2026-07-01: メインスキル座標のYは維持し、Xを `80` に変更。上から1〜4つ目のダンジョンボタンXに合わせた。

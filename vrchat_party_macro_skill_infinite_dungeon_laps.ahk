@@ -63,28 +63,8 @@ RunLoop()
         if (!EnableAutoSkill())
             return
 
-        RunInfiniteDungeonAction()
+        DoAction(1)
 
         Sleep 50
     }
-}
-
-; =========================
-; 無限ダンジョン動作
-; ダンジョンクリア間隔待機、1回クリック
-; =========================
-RunInfiniteDungeonAction()
-{
-    global running, dungeonClearIntervalMs, topLeftMoveX, topLeftMoveY, vrchatTitle
-
-    try WinActivate vrchatTitle
-    Sleep 100
-
-    ; ダンジョンクリア待ち時間
-    SleepInterruptible(dungeonClearIntervalMs)
-    if (!running)
-        return
-
-    ; クリック
-    MoveClickAndReturn(-topLeftMoveX, -topLeftMoveY, 1)
 }

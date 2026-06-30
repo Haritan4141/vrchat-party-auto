@@ -89,22 +89,3 @@ RunLoop()
     }
 }
 
-ResetAscendActionTimer()
-{
-    global lastAscendActionTick
-    lastAscendActionTick := A_TickCount
-}
-
-RunAscendActionIfDue()
-{
-    global running, lastAscendActionTick, ascendIntervalMs
-
-    if (!running)
-        return
-
-    if (A_TickCount - lastAscendActionTick < ascendIntervalMs)
-        return
-
-    lastAscendActionTick := A_TickCount
-    DoAscendAction()
-}

@@ -11,7 +11,6 @@ CoordMode "Mouse", "Client"
 ; 状態
 ; =========================
 global running := false
-global lastAscendActionTick := 0
 global lastSaleActionTick := 0
 
 #Include "vrchat_party_macro_common_interval_actions.ahk"
@@ -25,7 +24,6 @@ F8::
     running := !running
 
     if (running) {
-        ResetAscendActionTimer()
         ResetSaleActionTimer()
         ToolTip "Macro: ON"
         if (!EnableAutoSkill())
@@ -75,29 +73,6 @@ F6::
 }
 
 ; =========================
-; F7: 転生アクションのテスト
-; =========================
-F7::
-{
-    global running
-
-    if (running) {
-        ToolTip "Stop macro before F7 test"
-        SetTimer () => ToolTip(), -800
-        return
-    }
-
-    running := true
-    ToolTip "Testing ascend action"
-    DoAscendAction()
-    running := false
-    NeutralizeInputs()
-
-    ToolTip "Ascend action test done"
-    SetTimer () => ToolTip(), -800
-}
-
-; =========================
 ; メインループ
 ; =========================
 RunLoop()
@@ -109,48 +84,7 @@ RunLoop()
 
     while (running) {
         DoAction()
-        ; RunAscendActionIfDue() ; 転生アクションは無効化
         RunSaleActionIfDue()
         Sleep 50
     }
-}
-
-ResetAscendActionTimer()
-{
-    global lastAscendActionTick
-    lastAscendActionTick := A_TickCount
-}
-
-ResetSaleActionTimer()
-{
-    global lastSaleActionTick
-    lastSaleActionTick := A_TickCount
-}
-
-RunAscendActionIfDue()
-{
-    global running, lastAscendActionTick, ascendIntervalMs
-
-    if (!running)
-        return
-
-    if (A_TickCount - lastAscendActionTick < ascendIntervalMs)
-        return
-
-    lastAscendActionTick := A_TickCount
-    DoAscendAction()
-}
-
-RunSaleActionIfDue()
-{
-    global running, lastSaleActionTick, saleIntervalMs
-
-    if (!running)
-        return
-
-    if (A_TickCount - lastSaleActionTick < saleIntervalMs)
-        return
-
-    lastSaleActionTick := A_TickCount
-    DoSaleAction()
 }
