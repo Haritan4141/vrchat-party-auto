@@ -249,6 +249,7 @@ git diff --stat
 
 ## 更新履歴
 
+- 2026-07-01: READMEへ前提条件、基本使用方法、ファイル名規則、主要マクロ別の用途と推奨編成を追記。Markdown表で見やすく整理。
 - 2026-07-01: クリック抜け対策として `afterMoveClickWaitMs := 50` を追加。マウス移動後、クリック前に短く待つように `MoveClickAndReturn()` と `vrchat_party_macro_skill_infinite_dungeon.ahk` の専用クリック処理へ適用。
 - 2026-07-01: 再入場処理を `DoAction(reentryClickCount)` / `ClickReentryButton(clickCount)` に共通化。2回クリックは「調べる」→「再入場」、1回クリックは「再入場」のみのパターンとしてコメントを追加。転生/売却タイマー関数も共通化し、売却専用マクロから転生テストと転生タイマー残骸を削除。`common_interval_actions` 側にconfig値を上書きしないguarded defaultを置き、`#Warn` の未代入警告を回避。
 - 2026-07-01: 共通化レビューにあわせて不要になった `vrchat_party_macro_skill_Vclass_minion_laps.ahk` を削除。READMEと引き継ぎメモの一覧・説明を更新。
