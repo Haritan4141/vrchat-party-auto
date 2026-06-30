@@ -21,8 +21,10 @@ subSkillMoveY := -50     ; Autoスキルからサブスキル（エクスヒー�
 ;dungeonButtonMoveY := 60     ; 上から3つ目
 ;dungeonButtonMoveX := 80    ; 上から4つ目
 ;dungeonButtonMoveY := 22     ; 上から4つ目
-dungeonButtonMoveX := -80   ; 永傷の女王:V級
-dungeonButtonMoveY := 25    ; 永傷の女王:V級
+dungeonButtonMoveX := 80    ; 上から5つ目
+dungeonButtonMoveY := -16    ; 上から5つ目
+;dungeonButtonMoveX := -80   ; 永傷の女王:V級
+;dungeonButtonMoveY := 25    ; 永傷の女王:V級
 dungeonLeftMoveX := dungeonButtonMoveX
 dungeonLeftMoveY := dungeonButtonMoveY
 

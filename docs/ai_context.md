@@ -104,7 +104,7 @@ python -m py_compile .\vrchat_party_macro_gui.py
 - `README.md` の共通設定例が現在の `vrchat_party_macro_common_config.ahk` と一致しているか確認する
   - README例: `dungeonClearIntervalMs := 4500`, `topLeftMoveY := 38`
   - 現在の設定: `dungeonClearIntervalMs := 4500`, `topLeftMoveY := 38`, `ascendIntervalMs := 300000`
-  - ダンジョンボタン位置候補: 上から1つ目 `(80, 130)`, 上から2つ目 `(80, 98)`, 上から3つ目 `(80, 60)`, 上から4つ目 `(80, 22)`, 永傷の女王:V級 `(-80, 25)`
+  - ダンジョンボタン位置候補: 上から1つ目 `(80, 130)`, 上から2つ目 `(80, 98)`, 上から3つ目 `(80, 60)`, 上から4つ目 `(80, 22)`, 上から5つ目 `(80, -16)`, 永傷の女王:V級 `(-80, 25)`
 - GUIのAHK候補に新規追加ファイルが必要になった場合、`macro_files()` の抽出条件で表示されるか確認する
 - サブスキルON専用の `skill_ascend_sale` 派生ファイルが必要な場合は、ファイル作成、検証、README更新、push要否を確認する
 
@@ -249,6 +249,7 @@ git diff --stat
 
 ## 更新履歴
 
+- 2026-07-01: ダンジョンボタン位置候補に上から5つ目 `(80, -16)` を追加。GUIのプルダウンから選択可能。
 - 2026-07-01: READMEへ前提条件、基本使用方法、ファイル名規則、主要マクロ別の用途と推奨編成を追記。Markdown表で見やすく整理。
 - 2026-07-01: クリック抜け対策として `afterMoveClickWaitMs := 50` を追加。マウス移動後、クリック前に短く待つように `MoveClickAndReturn()` と `vrchat_party_macro_skill_infinite_dungeon.ahk` の専用クリック処理へ適用。
 - 2026-07-01: 再入場処理を `DoAction(reentryClickCount)` / `ClickReentryButton(clickCount)` に共通化。2回クリックは「調べる」→「再入場」、1回クリックは「再入場」のみのパターンとしてコメントを追加。転生/売却タイマー関数も共通化し、売却専用マクロから転生テストと転生タイマー残骸を削除。`common_interval_actions` 側にconfig値を上書きしないguarded defaultを置き、`#Warn` の未代入警告を回避。
