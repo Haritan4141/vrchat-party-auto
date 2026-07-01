@@ -107,7 +107,7 @@ saleIntervalMs := 300000         ; 売却間隔
 ```ahk
 topLeftMoveX := 60       ; Autoスキルから再入場までの量X
 topLeftMoveY := 38       ; Autoスキルから再入場までの量Y
-ascendLeftMoveX := 950   ; 転生ボタン方向に動かす量X
+ascendLeftMoveX := 930   ; 転生ボタン方向に動かす量X
 ascendLeftMoveY := 45    ; 転生ボタン方向に動かす量Y
 mainSkillMoveX := 80     ; Autoスキルからメインスキルボタンまでの量X（暫定）
 mainSkillMoveY := -50    ; Autoスキルからメインスキルボタンまでの量Y（暫定）

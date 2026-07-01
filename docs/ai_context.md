@@ -249,6 +249,7 @@ git diff --stat
 
 ## 更新履歴
 
+- 2026-07-01: 転生ボタン位置の微調整として `ascendLeftMoveX` を `950` から `930` に変更。
 - 2026-07-01: ダンジョンボタン位置候補に上から5つ目 `(80, -16)` を追加。GUIのプルダウンから選択可能。
 - 2026-07-01: READMEへ前提条件、基本使用方法、ファイル名規則、主要マクロ別の用途と推奨編成を追記。Markdown表で見やすく整理。
 - 2026-07-01: クリック抜け対策として `afterMoveClickWaitMs := 50` を追加。マウス移動後、クリック前に短く待つように `MoveClickAndReturn()` と `vrchat_party_macro_skill_infinite_dungeon.ahk` の専用クリック処理へ適用。
