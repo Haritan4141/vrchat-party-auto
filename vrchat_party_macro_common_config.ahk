@@ -1,5 +1,6 @@
 ﻿; VRChat party macro shared interval settings.
-dungeonClearIntervalMs := 4500   ; ダンジョンクリア間隔
+dungeonClearIntervalMs := 600   ; ダンジョンクリア間隔
+modifiedDungeonWpRecoveryWaitMs := 18000  ; 改変ダンジョンWP回復待機
 ascendIntervalMs := 300000        ; 転生間隔
 saleIntervalMs := 300000         ; 売却間隔
 
@@ -8,10 +9,12 @@ topLeftMoveX := 60       ; Autoスキルから再入場までの量X
 topLeftMoveY := 38       ; Autoスキルから再入場までの量Y
 ascendLeftMoveX := 970   ; 転生ボタン方向に動かす量X
 ascendLeftMoveY := 45    ; 転生ボタン方向に動かす量Y
-mainSkillMoveX := 80     ; Autoスキルからメインスキルボタンまでの量X（暫定）
-mainSkillMoveY := -50    ; Autoスキルからメインスキルボタンまでの量Y（暫定）
-subSkillMoveX := 300     ; Autoスキルからサブスキル（エクスヒール）ボタンまでの量X
-subSkillMoveY := -50     ; Autoスキルからサブスキル（エクスヒール）ボタンまでの量Y
+mainSkillMoveX := 80     ; Autoスキルからメインスキル1ボタンまでの量X
+mainSkillMoveY := -50    ; Autoスキルからメインスキル1ボタンまでの量Y
+mainSkill2MoveX := 80    ; Autoスキルからメインスキル2ボタンまでの量X（暫定）
+mainSkill2MoveY := 0     ; Autoスキルからメインスキル2ボタンまでの量Y（暫定）
+subSkillMoveX := 300     ; Autoスキルからサブスキル1ボタンまでの量X
+subSkillMoveY := -50     ; Autoスキルからサブスキル1ボタンまでの量Y
 ; ダンジョンボタン位置
 ;dungeonButtonMoveX := 80    ; 上から1つ目
 ;dungeonButtonMoveY := 130   ; 上から1つ目
@@ -21,10 +24,10 @@ subSkillMoveY := -50     ; Autoスキルからサブスキル（エクスヒー�
 ;dungeonButtonMoveY := 60     ; 上から3つ目
 ;dungeonButtonMoveX := 80    ; 上から4つ目
 ;dungeonButtonMoveY := 22     ; 上から4つ目
-dungeonButtonMoveX := 80    ; 上から5つ目
-dungeonButtonMoveY := -16    ; 上から5つ目
-;dungeonButtonMoveX := -80   ; 永傷の女王:V級
-;dungeonButtonMoveY := 25    ; 永傷の女王:V級
+;dungeonButtonMoveX := 80    ; 上から5つ目
+;dungeonButtonMoveY := -16    ; 上から5つ目
+dungeonButtonMoveX := -80   ; 永傷の女王:V級
+dungeonButtonMoveY := 25    ; 永傷の女王:V級
 dungeonLeftMoveX := dungeonButtonMoveX
 dungeonLeftMoveY := dungeonButtonMoveY
 

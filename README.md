@@ -98,6 +98,7 @@ vrchat_party_macro_common_config.ahk
 
 ```ahk
 dungeonClearIntervalMs := 4500   ; ダンジョンクリア間隔
+modifiedDungeonWpRecoveryWaitMs := 18000  ; 改変ダンジョンWP回復待機
 ascendIntervalMs := 300000       ; 転生間隔
 saleIntervalMs := 300000         ; 売却間隔
 ```
@@ -109,10 +110,12 @@ topLeftMoveX := 60       ; Autoスキルから再入場までの量X
 topLeftMoveY := 38       ; Autoスキルから再入場までの量Y
 ascendLeftMoveX := 970   ; 転生ボタン方向に動かす量X
 ascendLeftMoveY := 45    ; 転生ボタン方向に動かす量Y
-mainSkillMoveX := 80     ; Autoスキルからメインスキルボタンまでの量X（暫定）
-mainSkillMoveY := -50    ; Autoスキルからメインスキルボタンまでの量Y（暫定）
-subSkillMoveX := 300     ; Autoスキルからサブスキル（エクスヒール）ボタンまでの量X
-subSkillMoveY := -50     ; Autoスキルからサブスキル（エクスヒール）ボタンまでの量Y
+mainSkillMoveX := 80     ; Autoスキルからメインスキル1ボタンまでの量X
+mainSkillMoveY := -50    ; Autoスキルからメインスキル1ボタンまでの量Y
+mainSkill2MoveX := 80    ; Autoスキルからメインスキル2ボタンまでの量X（暫定）
+mainSkill2MoveY := 0     ; Autoスキルからメインスキル2ボタンまでの量Y（暫定）
+subSkillMoveX := 300     ; Autoスキルからサブスキル1ボタンまでの量X
+subSkillMoveY := -50     ; Autoスキルからサブスキル1ボタンまでの量Y
 clickHoldMs := 60        ; クリックを押している時間
 betweenClickMs := 300    ; ダブルクリック間隔
 afterMoveClickWaitMs := 50  ; マウス移動後、クリック前の待機
@@ -192,6 +195,7 @@ vrchat_party_macro_skill.ahk
 vrchat_party_macro_skill_ascend.ahk
 vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk
 vrchat_party_macro_skill_ascend_sale.ahk
+vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk
 vrchat_party_macro_skill_ascend_sale_overlord.ahk
 vrchat_party_macro_skill_ascend_secret_dungeon.ahk
 vrchat_party_macro_skill_infinite_dungeon.ahk
@@ -222,6 +226,10 @@ Autoスキル実行後、ダンジョンクリアを待ち、`調べる`、`再�
 ### `vrchat_party_macro_skill_ascend_secret_dungeon.ahk`
 
 9面ダンジョンの雑魚狩り金策用です。サブスキル（エクスヒール）クリック、Autoスキル有効化、GUIのダンジョンクリア間隔だけ待機、再入場ボタン1回クリックを繰り返します。売却は行わず、転生だけGUIの転生間隔で実行します。
+
+### `vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk`
+
+改変ダンジョン周回用です。Autoスキルクリック、GUIのダンジョンクリア間隔待機、メインスキル2を1回、サブスキル1を1回クリックし、WP回復待機18秒後に再入場ボタンを1回クリックします。転生と売却はGUIの設定間隔で実行します。
 
 ### `vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk`
 
