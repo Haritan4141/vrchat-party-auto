@@ -13,7 +13,7 @@ CoordMode "Mouse", "Client"
 global running := false
 global lastAscendActionTick := 0
 
-#Include "vrchat_party_macro_common_actions.ahk"
+#Include "vrchat_party_macro_common_interval_actions.ahk"
 
 ; =========================
 ; F8: Start/Stop
@@ -52,22 +52,7 @@ F9::
 ; =========================
 F7::
 {
-    global running
-
-    if (running) {
-        ToolTip "Stop macro before F7 test"
-        SetTimer () => ToolTip(), -800
-        return
-    }
-
-    running := true
-    ToolTip "Testing ascend action"
-    RunEscapeAscendDungeonAction()
-    running := false
-    NeutralizeInputs()
-
-    ToolTip "Ascend action test done"
-    SetTimer () => ToolTip(), -800
+    TestAscendAction()
 }
 
 ; =========================
@@ -110,7 +95,7 @@ RunSecretDungeonAction()
         return false
 
     if (ShouldRunAscendAction())
-        return RunEscapeAscendDungeonAction()
+        return DoAscendAction()
 
     return RunReentryAction()
 }
@@ -132,38 +117,6 @@ RunReentryAction()
         return false
 
     return running
-}
-
-; =========================
-; Escape, ascend, dungeon select
-; =========================
-RunEscapeAscendDungeonAction()
-{
-    global running, topLeftMoveX, topLeftMoveY, ascendLeftMoveX, ascendLeftMoveY
-    global dungeonLeftMoveX, dungeonLeftMoveY, vrchatTitle
-
-    if (!running)
-        return false
-
-    try WinActivate vrchatTitle
-    Sleep 100
-
-    if (!MoveClickAndReturn(-topLeftMoveX, topLeftMoveY, 1))
-        return false
-
-    if (!MoveClickAndReturn(-ascendLeftMoveX, -ascendLeftMoveY, 1))
-        return false
-
-    if (!MoveClickAndReturn(dungeonLeftMoveX, -dungeonLeftMoveY, 1))
-        return false
-
-    return running
-}
-
-ResetAscendActionTimer()
-{
-    global lastAscendActionTick
-    lastAscendActionTick := A_TickCount
 }
 
 ShouldRunAscendAction()

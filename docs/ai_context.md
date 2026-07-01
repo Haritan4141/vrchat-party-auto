@@ -62,16 +62,18 @@ python -m py_compile .\vrchat_party_macro_gui.py
 - `EnableAutoSkill()` はAutoスキルをクリックするだけで、カーソル位置はAutoスキル位置に維持する
 - `DoAction(reentryClickCount := 2)` はAutoスキル位置から再入場位置へ一時移動してクリックし、Autoスキル位置へ戻る。2回クリックは「調べる」→「再入場」、1回クリックは「再入場」のみのパターン
 - `vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk` は、再入場ボタン1回クリックの通常周回に転生ロジックを追加したマクロ
-- `DoSaleAction()` / `DoAscendAction()` はAutoスキル位置開始・Autoスキル位置終了を前提にする
+- `DoSaleAction()` / `DoAscendAction()` はAutoスキル位置開始・Autoスキル位置終了を前提にし、逃げる、売却または転生、ダンジョン選択までを担当する。Autoスキルクリックとサブスキルクリックは各マクロ本体側で行う
 - `ReturnPositionToAutoSkill()` は残しているが、通常の転生・売却・独自ループからは呼び出さない
 - `MoveClickAndReturn(dx, dy, clickCount, moveMs)` により、移動、クリック、戻りを共通化済み
 - マウス移動後、クリック前に `afterMoveClickWaitMs := 50` だけ待機する。通常の `MoveClickAndReturn()` と `vrchat_party_macro_skill_infinite_dungeon.ahk` の直接移動クリックの両方に適用
 - `ClickMainSkill(clickCount)` / `ClickMainSkill2(clickCount)` / `ClickSubSkill(clickCount)` により、スキルボタン座標をconfig経由で利用する
-- `DoSaleAction(useSubSkill := false)` / `DoAscendAction(useSubSkill := false)` は、`true` を渡すとサブスキル（エクスヒール）をクリックする
+- `TestSaleAction()` / `TestAscendAction()` はF6/F7用の共通単体テスト。売却/転生アクションのみを実行し、Autoスキルクリックやサブスキルクリックは行わない
+- `RunAscendActionIfDue()` / `RunSaleActionIfDue()` は、転生/売却アクションが実行された場合のみ `true` を返す。呼び出し元マクロは `true` のときにAutoスキルやサブスキルの再開処理を行う
 - `ResetAscendActionTimer()` / `ResetSaleActionTimer()` / `RunAscendActionIfDue()` / `RunSaleActionIfDue()` は `vrchat_party_macro_common_interval_actions.ahk` に共通化済み
 - サブスキル座標は `subSkillMoveX := 300`, `subSkillMoveY := -50`。メインスキル1暫定座標は `mainSkillMoveX := 80`, `mainSkillMoveY := -50`、メインスキル2暫定座標は `mainSkill2MoveX := 80`, `mainSkill2MoveY := 0`
 - `vrchat_party_macro_skill_infinite_dungeon.ahk` のクリック後待機は共通 `betweenClickMs` ではなく `infiniteDungeonSkillBetweenClickMs := 80`
 - `vrchat_party_macro_skill_ascend_sale_overlord.ahk` は特殊処理で、通常の `DoAction()` ではなく `RunOverlordDungeon()` を使う
+- `vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk` は各通常ループの先頭でAutoスキルをクリックするため、転生/売却直後にはAutoスキルをクリックしない。次ループ先頭のAutoクリックに任せる
 - `vrchat_party_macro_skill_infinite_dungeon_laps.ahk` は無限ダンジョン用で、毎ループでサブスキル2回クリック、Autoスキル有効化、再入場位置クリック、Autoスキル位置戻しを行う
 - `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` は、サブスキル2回クリック、Autoスキル有効化、`dungeonClearIntervalMs` 待機、再入場ボタン1回クリックを繰り返す。売却は行わず、`ascendIntervalMs` ごとに逃げる、転生、ダンジョン選択を行う
 - `vrchat_party_macro_skill_infinite_dungeon.ahk` は、初回だけAutoスキル位置を起点にし、その後はメインスキル位置とサブスキル位置を直接行き来して交互に1回ずつクリックする。転生/売却なし
@@ -250,6 +252,9 @@ git diff --stat
 
 ## 更新履歴
 
+- 2026-07-01: `vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk` の転生/売却後Autoスキル再開を削除。通常ループ先頭でAutoスキルをクリックする設計のため、二重クリックでAutoが解除されないようにした。
+- 2026-07-01: F6/F7の売却/転生テストを `TestSaleAction()` / `TestAscendAction()` に共通化。テスト時はAutoスキル/サブスキル再開処理を行わず、通常ループ側だけが再開責務を持つように整理。
+- 2026-07-01: 転生/売却共通処理からAutoスキルクリックとサブスキルクリックを分離。`DoSaleAction()` / `DoAscendAction()` は逃げる、売却または転生、ダンジョン選択までに限定し、各マクロ側で従来と同じタイミングにAutoスキル/サブスキル再開処理を配置。
 - 2026-07-01: `vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk` を追加。改変ダンジョン向けにAutoスキル、ダンジョンクリア待機、メインスキル2、サブスキル1、WP回復18秒、再入場1回クリックのループを実装。`mainSkill2MoveX/Y` と `modifiedDungeonWpRecoveryWaitMs` をconfigへ追加。
 - 2026-07-01: 転生ボタン位置の微調整として `ascendLeftMoveX` を `950` から `970` に変更。ボタンが右へ移動していたため前回の左方向調整を修正。
 - 2026-07-01: ダンジョンボタン位置候補に上から5つ目 `(80, -16)` を追加。GUIのプルダウンから選択可能。

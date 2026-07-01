@@ -54,22 +54,7 @@ F9::
 ; =========================
 F6::
 {
-    global running
-
-    if (running) {
-        ToolTip "Stop macro before F6 test"
-        SetTimer () => ToolTip(), -800
-        return
-    }
-
-    running := true
-    ToolTip "Testing sale action"
-    DoSaleAction()
-    running := false
-    NeutralizeInputs()
-
-    ToolTip "Sale action test done"
-    SetTimer () => ToolTip(), -800
+    TestSaleAction()
 }
 
 ; =========================
@@ -84,7 +69,10 @@ RunLoop()
 
     while (running) {
         DoAction()
-        RunSaleActionIfDue()
+        if (RunSaleActionIfDue()) {
+            if (!EnableAutoSkill())
+                return
+        }
         Sleep 50
     }
 }

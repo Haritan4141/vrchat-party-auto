@@ -54,22 +54,7 @@ F9::
 ; =========================
 F7::
 {
-    global running
-
-    if (running) {
-        ToolTip "Stop macro before F7 test"
-        SetTimer () => ToolTip(), -800
-        return
-    }
-
-    running := true
-    ToolTip "Testing ascend action"
-    DoAscendAction()
-    running := false
-    NeutralizeInputs()
-
-    ToolTip "Ascend action test done"
-    SetTimer () => ToolTip(), -800
+    TestAscendAction()
 }
 
 ; =========================
@@ -84,7 +69,10 @@ RunLoop()
 
     while (running) {
         DoAction()
-        RunAscendActionIfDue()
+        if (RunAscendActionIfDue()) {
+            if (!EnableAutoSkill())
+                return
+        }
         Sleep 50
     }
 }

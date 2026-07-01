@@ -41,122 +41,148 @@ ResetSaleActionTimer()
     lastSaleActionTick := A_TickCount
 }
 
-RunAscendActionIfDue(useSubSkill := false)
+TestSaleAction()
+{
+    global running
+
+    if (running) {
+        ToolTip "Stop macro before F6 test"
+        SetTimer () => ToolTip(), -800
+        return
+    }
+
+    running := true
+    ToolTip "Testing sale action"
+    DoSaleAction()
+    running := false
+    NeutralizeInputs()
+
+    ToolTip "Sale action test done"
+    SetTimer () => ToolTip(), -800
+}
+
+TestAscendAction()
+{
+    global running
+
+    if (running) {
+        ToolTip "Stop macro before F7 test"
+        SetTimer () => ToolTip(), -800
+        return
+    }
+
+    running := true
+    ToolTip "Testing ascend action"
+    DoAscendAction()
+    running := false
+    NeutralizeInputs()
+
+    ToolTip "Ascend action test done"
+    SetTimer () => ToolTip(), -800
+}
+
+RunAscendActionIfDue()
 {
     global running, lastAscendActionTick, ascendIntervalMs
 
     if (!running)
-        return
+        return false
 
     if (A_TickCount - lastAscendActionTick < ascendIntervalMs)
-        return
+        return false
 
     lastAscendActionTick := A_TickCount
-    DoAscendAction(useSubSkill)
+    return DoAscendAction()
 }
 
-RunSaleActionIfDue(useSubSkill := false)
+RunSaleActionIfDue()
 {
     global running, lastSaleActionTick, saleIntervalMs
 
     if (!running)
-        return
+        return false
 
     if (A_TickCount - lastSaleActionTick < saleIntervalMs)
-        return
+        return false
 
     lastSaleActionTick := A_TickCount
-    DoSaleAction(useSubSkill)
+    return DoSaleAction()
 }
 
 ; =========================
 ; 売却アクション
 ; =========================
-DoSaleAction(useSubSkill := false)
+DoSaleAction()
 {
     global running, topLeftMoveX, topLeftMoveY, dungeonLeftMoveX, dungeonLeftMoveY, vrchatTitle
 
     if (!running)
-        return
+        return false
 
     try WinActivate vrchatTitle
     Sleep 100
 
     ; 逃げるボタンクリック
     if (!MoveClickAndReturn(-topLeftMoveX, topLeftMoveY, 1))
-        return
+        return false
 
     ; メインメニューへ戻るボタンクリック
     if (!MoveClickAndReturn(100, 100, 1))
-        return
+        return false
 
     ; 預かり所ボタンクリック
     if (!MoveClickAndReturn(50, 50, 1))
-        return
+        return false
 
     ; 売却モードボタンクリック
     if (!MoveClickAndReturn(380, 100, 1))
-        return
+        return false
 
     ; 紫以下売却ボタンクリック
     if (!MoveClickAndReturn(600, 100, 2))
-        return
+        return false
 
     ; メインメニューへ戻るボタンクリック
     if (!MoveClickAndReturn(100, 100, 1))
-        return
+        return false
 
     ; 冒険に出るボタンクリック
     if (!MoveClickAndReturn(50, -20, 1))
-        return
+        return false
 
     ; ダンジョンボタンクリック
     if (!MoveClickAndReturn(dungeonLeftMoveX, -dungeonLeftMoveY, 1))
-        return
+        return false
 
-    if (useSubSkill) {
-        ; サブスキル（エクスヒール）ボタンクリック
-        if (!ClickSubSkill(2))
-            return
-    }
-
-    ; Autoスキル有効化
-    if (!EnableAutoSkill())
-        return
+    ; Autoスキルとサブスキルの再開処理は各マクロ側で行う。
+    return running
 }
 
 ; =========================
 ; 転生アクション
 ; =========================
-DoAscendAction(useSubSkill := false)
+DoAscendAction()
 {
     global running, topLeftMoveX, topLeftMoveY, ascendLeftMoveX, ascendLeftMoveY, dungeonLeftMoveX, dungeonLeftMoveY, vrchatTitle
 
     if (!running)
-        return
+        return false
 
     try WinActivate vrchatTitle
     Sleep 100
 
     ; 逃げるボタンクリック
     if (!MoveClickAndReturn(-topLeftMoveX, topLeftMoveY, 1))
-        return
+        return false
 
     ; 転生ボタンクリック
     if (!MoveClickAndReturn(-ascendLeftMoveX, -ascendLeftMoveY, 1))
-        return
+        return false
 
     ; ダンジョンボタンクリック
     if (!MoveClickAndReturn(dungeonLeftMoveX, -dungeonLeftMoveY, 1))
-        return
+        return false
 
-    if (useSubSkill) {
-        ; サブスキル（エクスヒール）ボタンクリック
-        if (!ClickSubSkill(2))
-            return
-    }
-
-    ; Autoスキル有効化
-    if (!EnableAutoSkill())
-        return
+    ; Autoスキルとサブスキルの再開処理は各マクロ側で行う。
+    return running
 }

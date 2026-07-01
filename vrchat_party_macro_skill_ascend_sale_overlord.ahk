@@ -56,22 +56,7 @@ F9::
 ; =========================
 F6::
 {
-    global running
-
-    if (running) {
-        ToolTip "Stop macro before F6 test"
-        SetTimer () => ToolTip(), -800
-        return
-    }
-
-    running := true
-    ToolTip "Testing sale action"
-    DoSaleAction(true)
-    running := false
-    NeutralizeInputs()
-
-    ToolTip "Sale action test done"
-    SetTimer () => ToolTip(), -800
+    TestSaleAction()
 }
 
 ; =========================
@@ -79,22 +64,7 @@ F6::
 ; =========================
 F7::
 {
-    global running
-
-    if (running) {
-        ToolTip "Stop macro before F7 test"
-        SetTimer () => ToolTip(), -800
-        return
-    }
-
-    running := true
-    ToolTip "Testing ascend action"
-    DoAscendAction(true)
-    running := false
-    NeutralizeInputs()
-
-    ToolTip "Ascend action test done"
-    SetTimer () => ToolTip(), -800
+    TestAscendAction()
 }
 
 ; =========================
@@ -109,10 +79,27 @@ RunLoop()
 
     while (running) {
         RunOverlordDungeon()
-        RunAscendActionIfDue(true)
-        RunSaleActionIfDue(true)
+        if (RunAscendActionIfDue()) {
+            if (!StartOverlordDungeonAfterIntervalAction())
+                return
+        }
+        if (RunSaleActionIfDue()) {
+            if (!StartOverlordDungeonAfterIntervalAction())
+                return
+        }
         Sleep 50
     }
+}
+
+; =========================
+; 転生/売却後のオーバーロード再開処理
+; =========================
+StartOverlordDungeonAfterIntervalAction()
+{
+    if (!ClickSubSkill(2))
+        return false
+
+    return EnableAutoSkill()
 }
 
 ; =========================

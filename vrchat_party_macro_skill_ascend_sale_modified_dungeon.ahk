@@ -54,22 +54,7 @@ F9::
 ; =========================
 F6::
 {
-    global running
-
-    if (running) {
-        ToolTip "Stop macro before F6 test"
-        SetTimer () => ToolTip(), -800
-        return
-    }
-
-    running := true
-    ToolTip "Testing sale action"
-    DoSaleAction()
-    running := false
-    NeutralizeInputs()
-
-    ToolTip "Sale action test done"
-    SetTimer () => ToolTip(), -800
+    TestSaleAction()
 }
 
 ; =========================
@@ -77,22 +62,7 @@ F6::
 ; =========================
 F7::
 {
-    global running
-
-    if (running) {
-        ToolTip "Stop macro before F7 test"
-        SetTimer () => ToolTip(), -800
-        return
-    }
-
-    running := true
-    ToolTip "Testing ascend action"
-    DoAscendAction()
-    running := false
-    NeutralizeInputs()
-
-    ToolTip "Ascend action test done"
-    SetTimer () => ToolTip(), -800
+    TestAscendAction()
 }
 
 ; =========================
@@ -107,6 +77,8 @@ RunLoop()
 
     while (running) {
         RunModifiedDungeonAction()
+        ; This macro clicks Auto skill at the start of each loop, so interval
+        ; actions must not restart Auto here or the next loop will toggle it off.
         RunAscendActionIfDue()
         RunSaleActionIfDue()
         Sleep 50

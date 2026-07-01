@@ -177,85 +177,63 @@ vrchat_party_macro_common_interval_actions.ahk
 
 再入場クリックは `DoAction()` で共通化しています。通常は `DoAction()` の2回クリックで、同じ位置のボタン表示が `調べる` から `再入場` に変わるパターンです。`DoAction(1)` は `調べる` が出ず、最初から `再入場` だけを1回クリックするパターンで使います。
 
-`DoSaleAction()` と `DoAscendAction()` は、引数に `true` を渡すとダンジョン選択後にサブスキル（エクスヒール）をクリックします。引数なしの場合は従来通りサブスキルを使いません。
+`DoSaleAction()` と `DoAscendAction()` は、逃げる、売却または転生、ダンジョン選択までを担当し、Autoスキル位置へ戻って終了します。Autoスキルクリックやサブスキルクリックは、各マクロ本体側で必要なタイミングに実行します。
 
-```ahk
-DoSaleAction(true)
-DoAscendAction(true)
-```
+F6/F7のテストは `TestSaleAction()` / `TestAscendAction()` で共通化しています。テスト時は売却/転生アクション単体だけを実行し、Autoスキルクリックやサブスキルクリックは行いません。
 
 ## 各ファイルの説明
 
 ファイル名に `_ascend` が含まれるマクロは自動転生あり、`_sale` が含まれるマクロは自動売却ありです。自動売却は紫以下一括売却を行います。
 
-現在のマクロ本体:
+### Autoスキル実行、ダンジョンクリア後、調べる・再入場
 
-```text
-vrchat_party_macro_skill.ahk
-vrchat_party_macro_skill_ascend.ahk
-vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk
-vrchat_party_macro_skill_ascend_sale.ahk
-vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk
-vrchat_party_macro_skill_ascend_sale_overlord.ahk
-vrchat_party_macro_skill_ascend_secret_dungeon.ahk
-vrchat_party_macro_skill_infinite_dungeon.ahk
-vrchat_party_macro_skill_infinite_dungeon_laps.ahk
-vrchat_party_macro_skill_sale.ahk
-```
+`vrchat_party_macro_skill.ahk`
 
-### `vrchat_party_macro_skill.ahk`
+### 無限ダンジョン 最上階登頂
 
-Autoスキル実行後、ダンジョンクリアを待ち、`調べる`、`再入場` の順にクリックします。
-
-### `vrchat_party_macro_skill_infinite_dungeon.ahk`
-
-無限ダンジョン最上階登頂用です。初回だけAutoスキル位置を起点にし、その後はメインスキルとサブスキルを直接行き来して交互に1回ずつクリックします。
-
-推奨編成:
+`vrchat_party_macro_skill_infinite_dungeon.ahk`
 
 | 枠 | 内容 |
 | --- | --- |
 | キャラクター | ミルティナ / 桔梗 |
-| 武器 | エクスカリバー |
-| 防具 | 巫女服 |
+| 武器 | ★エクスカリバー |
+| 防具 | ★九部の巫女服 |
 | カード | ルルネカード |
 | 称号 | 聖戦士 |
 | メインスキル1 | おもてなし |
 | サブスキル1 | 大結界:攻 |
 
-### `vrchat_party_macro_skill_ascend_secret_dungeon.ahk`
+### 9面ダンジョン 雑魚狩り金策
 
-9面ダンジョンの雑魚狩り金策用です。サブスキル（エクスヒール）クリック、Autoスキル有効化、GUIのダンジョンクリア間隔だけ待機、再入場ボタン1回クリックを繰り返します。売却は行わず、転生だけGUIの転生間隔で実行します。
+`vrchat_party_macro_skill_ascend_secret_dungeon.ahk`
 
-### `vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk`
+### 永傷の女王:V級ダンジョン 雑魚狩り金策
 
-改変ダンジョン周回用です。Autoスキルクリック、GUIのダンジョンクリア間隔待機、メインスキル2を1回、サブスキル1を1回クリックし、WP回復待機18秒後に再入場ボタンを1回クリックします。転生と売却はGUIの設定間隔で実行します。
+`vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk`
 
-### `vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk`
+| パターン | キャラクター | 武器 | 防具 | カード | 称号 | メインスキル1 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 2パン編成 | エク / なんでも | 黄金卿の支配者キューブ | 聖なる巫女服 | レグニアカード | enx3.0 | イグナイト |
+| 1パン編成 | エク / なんでも | ★エクスカリバー | 聖なる巫女服 | ビナコカード | enx3.0 | イグナイト |
+| 1パン編成 | エク / なんでも | 黄金卿の支配者キューブ | ★ルルネの改変服 | ルルネカード | enx3.0 | イグナイト |
 
-永傷の女王:V級ダンジョンの雑魚狩り金策用です。GUIのダンジョンクリア間隔だけ待機したあと、再入場ボタンを1回だけクリックし、GUIの転生間隔で転生アクションを実行します。
+### 改変ダンジョン 約束された勝利の剣でボス突破
 
-2パン編成:
-
-| 枠 | 内容 |
-| --- | --- |
-| キャラクター | エク / なんでも |
-| 武器 | 黄金卿の支配者キューブ |
-| 防具 | 聖なる巫女服 |
-| カード | サナティアカード |
-| 称号 | enx3.0 |
-| メインスキル1 | イグナイト |
-
-1パン編成:
+`vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk`
 
 | 枠 | 内容 |
 | --- | --- |
-| キャラクター | エク / なんでも |
-| 武器 | エクスカリバー |
-| 防具 | 聖なる巫女服 |
-| カード | 火力系カード |
-| 称号 | enx3.0 |
-| メインスキル1 | イグナイト |
+| キャラクター | プラム / イズール |
+| 武器 | ★エクスカリバー |
+| 防具 | ★イズールの改変服 |
+| カード | レグニアカード |
+| 称号 | 聖戦士 |
+| メインスキル1 | 7連狐火 |
+| メインスキル2 | 約束された勝利の剣 |
+| サブスキル1 | 心眼 |
+
+「ボスで停止しない」のチェックはOFF
+WPを回復する必要があるため、待機時間があります（18秒）。
 
 ## 直接AHKを実行する場合
 
@@ -271,8 +249,8 @@ vrchat_party_macro_skill_ascend_sale.ahk
 
 - `F8`: マクロ開始/停止
 - `F9`: 緊急停止
-- `F6`: 売却アクションのテストに対応しているファイルで使用
-- `F7`: 転生アクションのテストに対応しているファイルで使用
+- `F6`: 売却アクションの単体テストに対応しているファイルで使用
+- `F7`: 転生アクションの単体テストに対応しているファイルで使用
 
 ## git管理対象外
 
