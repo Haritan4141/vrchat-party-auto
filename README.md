@@ -185,6 +185,32 @@ F6/F7のテストは `TestSaleAction()` / `TestAscendAction()` で共通化し�
 
 ファイル名に `_ascend` が含まれるマクロは自動転生あり、`_sale` が含まれるマクロは自動売却ありです。自動売却は紫以下一括売却を行います。
 
+Autoスキルクリックのタイミングは、マクロごとに以下の3系統です。
+
+### 1. ループごとにAutoスキルをクリックする
+
+```text
+vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk
+vrchat_party_macro_skill_ascend_secret_dungeon.ahk
+vrchat_party_macro_skill_infinite_dungeon_laps.ahk
+```
+
+### 2. F8開始時 + 転生/売却後にAutoスキルをクリックする
+
+```text
+vrchat_party_macro_skill_ascend.ahk
+vrchat_party_macro_skill_sale.ahk
+vrchat_party_macro_skill_ascend_sale.ahk
+vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk
+```
+
+### 3. Autoスキルをクリックしない / F8のみ
+
+```text
+vrchat_party_macro_skill_infinite_dungeon.ahk: Autoスキルクリックなし。メイン/サブスキル往復のみ。
+vrchat_party_macro_skill.ahk: F8開始時のみAutoスキルクリック。転生/売却なし。
+```
+
 ### Autoスキル実行、ダンジョンクリア後、調べる・再入場
 
 `vrchat_party_macro_skill.ahk`
