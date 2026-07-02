@@ -10,8 +10,6 @@ if (A_LineFile = A_ScriptFullPath) {
     dungeonClearIntervalMs := 0
     mainSkillMoveX := 0
     mainSkillMoveY := 0
-    mainSkill2MoveX := 0
-    mainSkill2MoveY := 0
     subSkillMoveX := 0
     subSkillMoveY := 0
     vrchatTitle := ""
@@ -51,17 +49,6 @@ ClickMainSkill(clickCount := 1)
     return MoveClickAndReturn(mainSkillMoveX, mainSkillMoveY, clickCount)
 }
 
-; =========================
-; メインスキル2ボタンクリック
-; Autoスキル位置を中心位置として維持する
-; =========================
-ClickMainSkill2(clickCount := 1)
-{
-    global mainSkill2MoveX, mainSkill2MoveY
-    return MoveClickAndReturn(mainSkill2MoveX, mainSkill2MoveY, clickCount)
-}
-
-; =========================
 ; サブスキル1ボタンクリック
 ; Autoスキル位置を中心位置として維持する
 ; =========================

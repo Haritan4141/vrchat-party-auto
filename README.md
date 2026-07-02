@@ -98,7 +98,6 @@ vrchat_party_macro_common_config.ahk
 
 ```ahk
 dungeonClearIntervalMs := 4500   ; ダンジョンクリア間隔
-modifiedDungeonWpRecoveryWaitMs := 18000  ; 改変ダンジョンWP回復待機
 ascendIntervalMs := 300000       ; 転生間隔
 saleIntervalMs := 300000         ; 売却間隔
 ```
@@ -112,8 +111,6 @@ ascendLeftMoveX := 970   ; 転生ボタン方向に動かす量X
 ascendLeftMoveY := 45    ; 転生ボタン方向に動かす量Y
 mainSkillMoveX := 80     ; Autoスキルからメインスキル1ボタンまでの量X
 mainSkillMoveY := -50    ; Autoスキルからメインスキル1ボタンまでの量Y
-mainSkill2MoveX := 80    ; Autoスキルからメインスキル2ボタンまでの量X（暫定）
-mainSkill2MoveY := 0     ; Autoスキルからメインスキル2ボタンまでの量Y（暫定）
 subSkillMoveX := 300     ; Autoスキルからサブスキル1ボタンまでの量X
 subSkillMoveY := -50     ; Autoスキルからサブスキル1ボタンまでの量Y
 clickHoldMs := 60        ; クリックを押している時間
@@ -190,7 +187,6 @@ Autoスキルクリックのタイミングは、マクロごとに以下の3系
 ### 1. ループごとにAutoスキルをクリックする
 
 ```text
-vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk
 vrchat_party_macro_skill_ascend_secret_dungeon.ahk
 vrchat_party_macro_skill_infinite_dungeon_laps.ahk
 ```
@@ -201,6 +197,7 @@ vrchat_party_macro_skill_infinite_dungeon_laps.ahk
 vrchat_party_macro_skill_ascend.ahk
 vrchat_party_macro_skill_sale.ahk
 vrchat_party_macro_skill_ascend_sale.ahk
+vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk
 vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk
 ```
 
@@ -243,23 +240,19 @@ vrchat_party_macro_skill.ahk: F8開始時のみAutoスキルクリック。転�
 | 1パン編成 | エク / なんでも | ★エクスカリバー | 聖なる巫女服 | ビナコカード | enx3.0 | イグナイト |
 | 1パン編成 | エク / なんでも | 黄金卿の支配者キューブ | ★ルルネの改変服 | ルルネカード | enx3.0 | イグナイト |
 
-### 改変ダンジョン 約束された勝利の剣でボス突破
+### 改変ダンジョン
 
 `vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk`
 
 | 枠 | 内容 |
 | --- | --- |
 | キャラクター | プラム / イズール |
-| 武器 | ★エクスカリバー |
-| 防具 | ★イズールの改変服 |
-| カード | レグニアカード |
-| 称号 | 聖戦士 |
+| 武器 | 追撃メタルキューブ |
+| 防具 | ★プラムの改変服 |
+| カード | ショコラカード |
+| 称号 | 影の王 |
 | メインスキル1 | 7連狐火 |
-| メインスキル2 | 約束された勝利の剣 |
 | サブスキル1 | 心眼 |
-
-「ボスで停止しない」のチェックはOFF
-WPを回復する必要があるため、待機時間があります（18秒）。
 
 ## 直接AHKを実行する場合
 

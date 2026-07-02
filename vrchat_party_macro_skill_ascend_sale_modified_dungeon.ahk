@@ -28,6 +28,8 @@ F8::
         ResetAscendActionTimer()
         ResetSaleActionTimer()
         ToolTip "Macro: ON"
+        if (!EnableAutoSkill())
+            return
         SetTimer RunLoop, -1
     } else {
         ToolTip "Macro: OFF"
@@ -77,21 +79,25 @@ RunLoop()
 
     while (running) {
         RunModifiedDungeonAction()
-        ; This macro clicks Auto skill at the start of each loop, so interval
-        ; actions must not restart Auto here or the next loop will toggle it off.
-        RunAscendActionIfDue()
-        RunSaleActionIfDue()
+        if (RunAscendActionIfDue()) {
+            if (!EnableAutoSkill())
+                return
+        }
+        if (RunSaleActionIfDue()) {
+            if (!EnableAutoSkill())
+                return
+        }
         Sleep 50
     }
 }
 
 ; =========================
 ; Modified dungeon loop
-; Auto skill, clear wait, main skill 2, sub skill 1, WP recovery, reentry
+; Clear wait, sub skill 1, reentry
 ; =========================
 RunModifiedDungeonAction()
 {
-    global running, dungeonClearIntervalMs, modifiedDungeonWpRecoveryWaitMs, vrchatTitle
+    global running, dungeonClearIntervalMs, vrchatTitle
 
     if (!running)
         return false
@@ -99,21 +105,11 @@ RunModifiedDungeonAction()
     try WinActivate vrchatTitle
     Sleep 100
 
-    if (!EnableAutoSkill())
-        return false
-
     SleepInterruptible(dungeonClearIntervalMs)
     if (!running)
         return false
 
-    if (!ClickMainSkill2(1))
-        return false
-
     if (!ClickSubSkill(1))
-        return false
-
-    SleepInterruptible(modifiedDungeonWpRecoveryWaitMs)
-    if (!running)
         return false
 
     return ClickReentryButton(1)

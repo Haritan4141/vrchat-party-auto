@@ -1,6 +1,5 @@
 ﻿; VRChat party macro shared interval settings.
 dungeonClearIntervalMs := 600   ; ダンジョンクリア間隔
-modifiedDungeonWpRecoveryWaitMs := 18000  ; 改変ダンジョンWP回復待機
 ascendIntervalMs := 300000        ; 転生間隔
 saleIntervalMs := 300000         ; 売却間隔
 
@@ -11,8 +10,6 @@ ascendLeftMoveX := 970   ; 転生ボタン方向に動かす量X
 ascendLeftMoveY := 45    ; 転生ボタン方向に動かす量Y
 mainSkillMoveX := 80     ; Autoスキルからメインスキル1ボタンまでの量X
 mainSkillMoveY := -50    ; Autoスキルからメインスキル1ボタンまでの量Y
-mainSkill2MoveX := 80    ; Autoスキルからメインスキル2ボタンまでの量X（暫定）
-mainSkill2MoveY := 0     ; Autoスキルからメインスキル2ボタンまでの量Y（暫定）
 subSkillMoveX := 300     ; Autoスキルからサブスキル1ボタンまでの量X
 subSkillMoveY := -50     ; Autoスキルからサブスキル1ボタンまでの量Y
 ; ダンジョンボタン位置
