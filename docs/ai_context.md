@@ -62,7 +62,7 @@ python -m py_compile .\vrchat_party_macro_gui.py
 - `ReturnPositionToAutoSkill()` は残しているが、通常の転生・売却・独自ループからは呼び出さない
 - `MoveClickAndReturn(dx, dy, clickCount, moveMs)` により、移動、クリック、戻りを共通化済み
 - マウス移動後、クリック前に `afterMoveClickWaitMs := 50` だけ待機する。通常の `MoveClickAndReturn()` と `vrchat_party_macro_skill_infinite_dungeon.ahk` の直接移動クリックの両方に適用
-- 共通クリック後待機は `afterClickWaitMs := 50`、同じ位置を複数回クリックするときの間隔は `betweenRepeatClickMs := 50`。旧 `betweenClickMs` はconfigから外し、古いローカルconfig向けの互換フォールバックとしてのみ `vrchat_party_macro_common_actions.ahk` に残す
+- 共通クリック後待機は `afterClickWaitMs := 50`、同じ位置を複数回クリックするときの間隔は `betweenRepeatClickMs := 50`
 - `ClickMainSkill(clickCount)` / `ClickSubSkill(clickCount)` により、スキルボタン座標をconfig経由で利用する
 - `TestSaleAction()` / `TestAscendAction()` はF6/F7用の共通単体テスト。売却/転生アクションのみを実行し、Autoスキルクリックやサブスキルクリックは行わない
 - `RunAscendActionIfDue()` / `RunSaleActionIfDue()` は、転生/売却アクションが実行された場合のみ `true` を返す。呼び出し元マクロは `true` のときにAutoスキルやサブスキルの再開処理を行う
@@ -247,11 +247,12 @@ git diff --stat
 
 ## 更新履歴
 
-- 2026-07-04: 再入場と逃げるのY座標を分離。再入場は `reentryMoveY := -37`、逃げるは `escapeMoveY := 38`。旧 `topLeftMoveX/Y` は古いローカルconfig向けの互換フォールバックとしてのみ残した。
+- 2026-07-04: 古いconfig対応を削除。現行の `reentryMoveX/Y`、`escapeMoveX/Y`、`afterClickWaitMs`、`betweenRepeatClickMs` を必須設定として扱う。
+- 2026-07-04: 再入場と逃げるのY座標を分離。再入場は `reentryMoveY := -37`、逃げるは `escapeMoveY := 38`。
 - 2026-07-04: `vrchat_party_macro_skill_infinite_dungeon.ahk` の通常ループ末尾待機を10ms、通常ループのVRChatアクティブ化後待機を20msに短縮。F9停止時の100ms待機は維持。
 - 2026-07-04: `vrchat_party_macro_skill_infinite_dungeon.ahk` のメインスキル/サブスキル間の直接移動時間を、このマクロ専用の `infiniteDungeonSkillMoveMs := 80` に変更。
-- 2026-07-04: `vrchat_party_macro_skill_infinite_dungeon.ahk` の専用クリック後待機 `infiniteDungeonSkillBetweenClickMs` を廃止し、共通 `afterClickWaitMs := 50` を使うように変更。configとREADMEから専用設定を削除。
-- 2026-07-04: 共通クリック待機を `afterClickWaitMs := 50` と `betweenRepeatClickMs := 50` に分離。旧 `betweenClickMs` はconfigから外し、古いローカルconfig向けの互換フォールバックとしてのみ残した。
+- 2026-07-04: `vrchat_party_macro_skill_infinite_dungeon.ahk` の専用クリック後待機を廃止し、共通 `afterClickWaitMs := 50` を使うように変更。configとREADMEから専用設定を削除。
+- 2026-07-04: 共通クリック待機を `afterClickWaitMs := 50` と `betweenRepeatClickMs := 50` に分離。
 - 2026-07-04: `vrchat_party_macro_skill_ascend_Vclass_minion_laps_fast.ahk` を追加。F8開始時と転生後のみAutoスキルをクリックし、通常ループはAutoスキル位置へ戻らずメインスキル1と再入場を直接往復する。転生前のみAutoスキル位置へ戻す。メインスキル1は約50ms間隔、メインスキル1と再入場の移動時間は80ms、再入場クリック後待機は50ms、通常ループのVRChatアクティブ化後待機は20ms。READMEへAutoスキル分類と説明を追記。
 - 2026-07-02: `vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk` を、F8開始時と転生/売却後のみAutoスキルをクリックし、通常ループはダンジョンクリア待機、サブスキル1、再入場1回クリックだけに変更。未使用になったメインスキル2設定と改変ダンジョンWP待機設定を削除。
 - 2026-07-01: 未使用になった `vrchat_party_macro_skill_ascend_sale_overlord.ahk` を削除。READMEへAutoスキルクリックタイミングの3分類を追加。

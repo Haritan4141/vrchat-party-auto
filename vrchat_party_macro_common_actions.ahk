@@ -20,29 +20,6 @@ if (A_LineFile = A_ScriptFullPath) {
     ExitApp
 }
 
-; New configs split the old betweenClickMs role into:
-; - afterClickWaitMs: wait after the final click before the next movement/action
-; - betweenRepeatClickMs: wait between repeated clicks at the same position
-; Keep old-config fallback so existing local config files do not fail immediately.
-if (!IsSet(afterClickWaitMs)) {
-    afterClickWaitMs := IsSet(betweenClickMs) ? betweenClickMs : 50
-}
-if (!IsSet(betweenRepeatClickMs)) {
-    betweenRepeatClickMs := IsSet(betweenClickMs) ? betweenClickMs : 50
-}
-if (!IsSet(reentryMoveX)) {
-    reentryMoveX := IsSet(topLeftMoveX) ? -topLeftMoveX : -60
-}
-if (!IsSet(reentryMoveY)) {
-    reentryMoveY := IsSet(topLeftMoveY) ? -topLeftMoveY : -37
-}
-if (!IsSet(escapeMoveX)) {
-    escapeMoveX := IsSet(topLeftMoveX) ? -topLeftMoveX : -60
-}
-if (!IsSet(escapeMoveY)) {
-    escapeMoveY := IsSet(topLeftMoveY) ? topLeftMoveY : 38
-}
-
 ; =========================
 ; Autoスキル有効化
 ; Autoスキル位置を中心位置として維持する
