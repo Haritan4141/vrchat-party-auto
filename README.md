@@ -105,8 +105,10 @@ saleIntervalMs := 300000         ; 売却間隔
 クリックや移動量などの操作設定も共通化しています。
 
 ```ahk
-topLeftMoveX := 60       ; Autoスキルから再入場までの量X
-topLeftMoveY := 38       ; Autoスキルから再入場までの量Y
+reentryMoveX := -60      ; Autoスキルから再入場までの量X
+reentryMoveY := -37      ; Autoスキルから再入場までの量Y
+escapeMoveX := -60       ; Autoスキルから逃げるまでの量X
+escapeMoveY := 38        ; Autoスキルから逃げるまでの量Y
 ascendLeftMoveX := 970   ; 転生ボタン方向に動かす量X
 ascendLeftMoveY := 45    ; 転生ボタン方向に動かす量Y
 mainSkillMoveX := 80     ; Autoスキルからメインスキル1ボタンまでの量X
@@ -114,9 +116,9 @@ mainSkillMoveY := -50    ; Autoスキルからメインスキル1ボタンまで
 subSkillMoveX := 300     ; Autoスキルからサブスキル1ボタンまでの量X
 subSkillMoveY := -50     ; Autoスキルからサブスキル1ボタンまでの量Y
 clickHoldMs := 60        ; クリックを押している時間
-betweenClickMs := 300    ; ダブルクリック間隔
+afterClickWaitMs := 50   ; 1クリック後の待機
+betweenRepeatClickMs := 50  ; 同じ位置を複数回クリックするときの間隔
 afterMoveClickWaitMs := 50  ; マウス移動後、クリック前の待機
-infiniteDungeonSkillBetweenClickMs := 80  ; 無限ダンジョン交互スキルのクリック後待機
 moveStepMs := 16         ; マウス移動の刻み
 vrchatTitle := "VRChat"
 ```
@@ -199,6 +201,7 @@ vrchat_party_macro_skill_sale.ahk
 vrchat_party_macro_skill_ascend_sale.ahk
 vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk
 vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk
+vrchat_party_macro_skill_ascend_Vclass_minion_laps_fast.ahk
 ```
 
 ### 3. Autoスキルをクリックしない / F8のみ
@@ -215,6 +218,8 @@ vrchat_party_macro_skill.ahk: F8開始時のみAutoスキルクリック。転�
 ### 無限ダンジョン 最上階登頂
 
 `vrchat_party_macro_skill_infinite_dungeon.ahk`
+
+メインスキル1とサブスキル1を直接往復します。クリック後待機は共通の50ms、スキル間の移動時間はこのマクロ専用で80msです。ループ末尾待機は10ms、通常ループのVRChatアクティブ化後待機は20msです。
 
 | 枠 | 内容 |
 | --- | --- |
@@ -239,6 +244,12 @@ vrchat_party_macro_skill.ahk: F8開始時のみAutoスキルクリック。転�
 | 2パン編成 | エク / なんでも | 黄金卿の支配者キューブ | 聖なる巫女服 | レグニアカード | enx3.0 | イグナイト |
 | 1パン編成 | エク / なんでも | ★エクスカリバー | 聖なる巫女服 | ビナコカード | enx3.0 | イグナイト |
 | 1パン編成 | エク / なんでも | 黄金卿の支配者キューブ | ★ルルネの改変服 | ルルネカード | enx3.0 | イグナイト |
+
+### 永傷の女王:V級ダンジョン 雑魚狩り金策（高速）
+
+`vrchat_party_macro_skill_ascend_Vclass_minion_laps_fast.ahk`
+
+F8開始時と転生後のみAutoスキルをクリックします。通常ループはAutoスキル位置へ毎回戻らず、メインスキル1と再入場ボタンを直接往復します。転生タイミングのみAutoスキル位置へ戻してから転生アクションへ入ります。メインスキル1の連打間隔は約50ms、メインスキル1と再入場の移動時間は80msです。再入場クリック後待機は50ms、通常ループのVRChatアクティブ化後待機は20msです。
 
 ### 改変ダンジョン
 

@@ -2,10 +2,13 @@
 
 if (A_LineFile = A_ScriptFullPath) {
     running := false
-    topLeftMoveX := 0
-    topLeftMoveY := 0
+    reentryMoveX := 0
+    reentryMoveY := 0
+    escapeMoveX := 0
+    escapeMoveY := 0
     clickHoldMs := 0
-    betweenClickMs := 0
+    afterClickWaitMs := 0
+    betweenRepeatClickMs := 0
     afterMoveClickWaitMs := 0
     dungeonClearIntervalMs := 0
     mainSkillMoveX := 0
@@ -17,6 +20,28 @@ if (A_LineFile = A_ScriptFullPath) {
     ExitApp
 }
 
+; New configs split the old betweenClickMs role into:
+; - afterClickWaitMs: wait after the final click before the next movement/action
+; - betweenRepeatClickMs: wait between repeated clicks at the same position
+; Keep old-config fallback so existing local config files do not fail immediately.
+if (!IsSet(afterClickWaitMs)) {
+    afterClickWaitMs := IsSet(betweenClickMs) ? betweenClickMs : 50
+}
+if (!IsSet(betweenRepeatClickMs)) {
+    betweenRepeatClickMs := IsSet(betweenClickMs) ? betweenClickMs : 50
+}
+if (!IsSet(reentryMoveX)) {
+    reentryMoveX := IsSet(topLeftMoveX) ? -topLeftMoveX : -60
+}
+if (!IsSet(reentryMoveY)) {
+    reentryMoveY := IsSet(topLeftMoveY) ? -topLeftMoveY : -37
+}
+if (!IsSet(escapeMoveX)) {
+    escapeMoveX := IsSet(topLeftMoveX) ? -topLeftMoveX : -60
+}
+if (!IsSet(escapeMoveY)) {
+    escapeMoveY := IsSet(topLeftMoveY) ? topLeftMoveY : 38
+}
 
 ; =========================
 ; Autoスキル有効化
@@ -64,12 +89,12 @@ ClickSubSkill(clickCount := 1)
 ; =========================
 ReturnPositionToAutoSkill()
 {
-    global running, topLeftMoveX, topLeftMoveY
+    global running, reentryMoveX, reentryMoveY
 
     if (!running)
         return false
 
-    SmoothMouseMoveRel(topLeftMoveX, topLeftMoveY, 250)
+    SmoothMouseMoveRel(-reentryMoveX, -reentryMoveY, 250)
     return running
 }
 
@@ -99,8 +124,8 @@ DoAction(reentryClickCount := 2)
 ; =========================
 ClickReentryButton(clickCount := 2)
 {
-    global topLeftMoveX, topLeftMoveY
-    return MoveClickAndReturn(-topLeftMoveX, -topLeftMoveY, clickCount)
+    global reentryMoveX, reentryMoveY
+    return MoveClickAndReturn(reentryMoveX, reentryMoveY, clickCount)
 }
 
 LeftClick(holdMs := 60)
@@ -112,7 +137,7 @@ LeftClick(holdMs := 60)
 
 MoveClickAndReturn(dx, dy, clickCount := 1, moveMs := 250)
 {
-    global running, clickHoldMs, betweenClickMs, afterMoveClickWaitMs
+    global running, clickHoldMs, afterClickWaitMs, betweenRepeatClickMs, afterMoveClickWaitMs
 
     if (!running)
         return false
@@ -127,7 +152,11 @@ MoveClickAndReturn(dx, dy, clickCount := 1, moveMs := 250)
 
     Loop clickCount {
         LeftClick(clickHoldMs)
-        SleepInterruptible(betweenClickMs)
+        if (A_Index < clickCount) {
+            SleepInterruptible(betweenRepeatClickMs)
+        } else {
+            SleepInterruptible(afterClickWaitMs)
+        }
         if (!running)
             return false
     }

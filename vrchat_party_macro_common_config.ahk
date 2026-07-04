@@ -1,11 +1,13 @@
 ﻿; VRChat party macro shared interval settings.
-dungeonClearIntervalMs := 600   ; ダンジョンクリア間隔
-ascendIntervalMs := 300000        ; 転生間隔
+dungeonClearIntervalMs := 3000   ; ダンジョンクリア間隔
+ascendIntervalMs := 200000        ; 転生間隔
 saleIntervalMs := 300000         ; 売却間隔
 
 ; VRChat party macro shared action settings.
-topLeftMoveX := 60       ; Autoスキルから再入場までの量X
-topLeftMoveY := 38       ; Autoスキルから再入場までの量Y
+reentryMoveX := -60      ; Autoスキルから再入場までの量X
+reentryMoveY := -37      ; Autoスキルから再入場までの量Y
+escapeMoveX := -60       ; Autoスキルから逃げるまでの量X
+escapeMoveY := 38        ; Autoスキルから逃げるまでの量Y
 ascendLeftMoveX := 970   ; 転生ボタン方向に動かす量X
 ascendLeftMoveY := 45    ; 転生ボタン方向に動かす量Y
 mainSkillMoveX := 80     ; Autoスキルからメインスキル1ボタンまでの量X
@@ -29,8 +31,8 @@ dungeonLeftMoveX := dungeonButtonMoveX
 dungeonLeftMoveY := dungeonButtonMoveY
 
 clickHoldMs := 60        ; クリックを押している時間
-betweenClickMs := 300    ; ダブルクリック間隔
+afterClickWaitMs := 50   ; 1クリック後の待機
+betweenRepeatClickMs := 50  ; 同じ位置を複数回クリックするときの間隔
 afterMoveClickWaitMs := 50  ; マウス移動後、クリック前の待機
-infiniteDungeonSkillBetweenClickMs := 80  ; 無限ダンジョン交互スキルのクリック後待機
 moveStepMs := 16         ; マウス移動の刻み
 vrchatTitle := "VRChat"

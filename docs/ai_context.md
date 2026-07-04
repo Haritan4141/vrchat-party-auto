@@ -30,23 +30,18 @@ python -m py_compile .\vrchat_party_macro_gui.py
 
 ## 現在の作業目的
 
-直近の依頼は、リポジトリ全体を共通化方針でレビューし、不要になった `vrchat_party_macro_skill_Vclass_minion_laps.ahk` を削除することです。
+直近の依頼は、`vrchat_party_macro_skill_ascend_Vclass_minion_laps_fast.ahk` を新規作成することです。
 
 最終的に達成したい状態:
 
 - 新規マクロがGUIのAHK候補に表示される
-- F8/F9の基本操作を既存マクロに揃える
-- 初回だけAutoスキル位置を起点にし、その後はメインスキル位置とサブスキル位置を直接行き来して交互にクリックする
-- メインスキル暫定座標は上から1〜4つ目のダンジョンボタンXに合わせて `mainSkillMoveX := 80`, `mainSkillMoveY := -50`
-- サブスキル座標は既存直書き値を `subSkillMoveX := 300`, `subSkillMoveY := -50` に集約する
-- `vrchat_party_macro_skill_infinite_dungeon.ahk` のクリック後待機は専用設定 `infiniteDungeonSkillBetweenClickMs := 80` を使う
+- F8開始時と転生後のみAutoスキルをクリックする
+- 通常ループはAutoスキル位置へ毎回戻らず、メインスキル1と再入場ボタンを直接往復する。転生タイミングのみAutoスキル位置へ戻す。メインスキル1の連打間隔は約50ms、メインスキル1と再入場の移動時間は80ms、再入場クリック後待機は50ms、通常ループのVRChatアクティブ化後待機は20ms
+- ファイル名に `_sale` がないため、売却ロジックは入れない
 
 変更対象:
 
-- `vrchat_party_macro_gui.py`
-- `vrchat_party_macro_common_config.ahk`
-- `vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk`
-- `vrchat_party_macro_skill_infinite_dungeon.ahk`
+- `vrchat_party_macro_skill_ascend_Vclass_minion_laps_fast.ahk`
 - `README.md`
 - `docs/ai_context.md`
 
@@ -62,16 +57,18 @@ python -m py_compile .\vrchat_party_macro_gui.py
 - `EnableAutoSkill()` はAutoスキルをクリックするだけで、カーソル位置はAutoスキル位置に維持する
 - `DoAction(reentryClickCount := 2)` はAutoスキル位置から再入場位置へ一時移動してクリックし、Autoスキル位置へ戻る。2回クリックは「調べる」→「再入場」、1回クリックは「再入場」のみのパターン
 - `vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk` は、再入場ボタン1回クリックの通常周回に転生ロジックを追加したマクロ
+- `vrchat_party_macro_skill_ascend_Vclass_minion_laps_fast.ahk` は、F8開始時と転生後のみAutoスキルをクリックする。通常ループではAutoスキル位置へ毎回戻らず、メインスキル1位置と再入場位置を直接往復する。転生タイミングのみAutoスキル位置へ戻す。メインスキル1はクリック保持30ms + 待機20msで押し始め基準約50ms間隔。再入場クリック後待機は50ms、通常ループのVRChatアクティブ化後待機は20ms。売却なし
 - `DoSaleAction()` / `DoAscendAction()` はAutoスキル位置開始・Autoスキル位置終了を前提にし、逃げる、売却または転生、ダンジョン選択までを担当する。Autoスキルクリックとサブスキルクリックは各マクロ本体側で行う
 - `ReturnPositionToAutoSkill()` は残しているが、通常の転生・売却・独自ループからは呼び出さない
 - `MoveClickAndReturn(dx, dy, clickCount, moveMs)` により、移動、クリック、戻りを共通化済み
 - マウス移動後、クリック前に `afterMoveClickWaitMs := 50` だけ待機する。通常の `MoveClickAndReturn()` と `vrchat_party_macro_skill_infinite_dungeon.ahk` の直接移動クリックの両方に適用
+- 共通クリック後待機は `afterClickWaitMs := 50`、同じ位置を複数回クリックするときの間隔は `betweenRepeatClickMs := 50`。旧 `betweenClickMs` はconfigから外し、古いローカルconfig向けの互換フォールバックとしてのみ `vrchat_party_macro_common_actions.ahk` に残す
 - `ClickMainSkill(clickCount)` / `ClickSubSkill(clickCount)` により、スキルボタン座標をconfig経由で利用する
 - `TestSaleAction()` / `TestAscendAction()` はF6/F7用の共通単体テスト。売却/転生アクションのみを実行し、Autoスキルクリックやサブスキルクリックは行わない
 - `RunAscendActionIfDue()` / `RunSaleActionIfDue()` は、転生/売却アクションが実行された場合のみ `true` を返す。呼び出し元マクロは `true` のときにAutoスキルやサブスキルの再開処理を行う
 - `ResetAscendActionTimer()` / `ResetSaleActionTimer()` / `RunAscendActionIfDue()` / `RunSaleActionIfDue()` は `vrchat_party_macro_common_interval_actions.ahk` に共通化済み
 - サブスキル座標は `subSkillMoveX := 300`, `subSkillMoveY := -50`。メインスキル1暫定座標は `mainSkillMoveX := 80`, `mainSkillMoveY := -50`
-- `vrchat_party_macro_skill_infinite_dungeon.ahk` のクリック後待機は共通 `betweenClickMs` ではなく `infiniteDungeonSkillBetweenClickMs := 80`
+- `vrchat_party_macro_skill_infinite_dungeon.ahk` のクリック後待機も共通 `afterClickWaitMs := 50` に揃えた。同じ位置の複数回クリックはないため `betweenRepeatClickMs` は通常使わない。スキル間の移動時間はこのマクロ専用で `infiniteDungeonSkillMoveMs := 80`。ループ末尾待機は `infiniteDungeonLoopSleepMs := 10`、通常ループのVRChatアクティブ化後待機は `infiniteDungeonActivateWaitMs := 20`
 - `vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk` はF8開始時と転生/売却後のみAutoスキルをクリックする。通常ループはダンジョンクリア待機、サブスキル1、再入場1回クリック
 - `vrchat_party_macro_skill_infinite_dungeon_laps.ahk` は無限ダンジョン用で、毎ループでサブスキル2回クリック、Autoスキル有効化、再入場位置クリック、Autoスキル位置戻しを行う
 - `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` は、サブスキル2回クリック、Autoスキル有効化、`dungeonClearIntervalMs` 待機、再入場ボタン1回クリックを繰り返す。売却は行わず、`ascendIntervalMs` ごとに逃げる、転生、ダンジョン選択を行う
@@ -103,8 +100,8 @@ python -m py_compile .\vrchat_party_macro_gui.py
 次に確認すべきこと:
 
 - `README.md` の共通設定例が現在の `vrchat_party_macro_common_config.ahk` と一致しているか確認する
-  - README例: `dungeonClearIntervalMs := 4500`, `topLeftMoveY := 38`
-  - 現在の設定: `dungeonClearIntervalMs := 4500`, `topLeftMoveY := 38`, `ascendIntervalMs := 300000`
+  - README例: `dungeonClearIntervalMs := 4500`, `reentryMoveY := -37`, `escapeMoveY := 38`
+  - 現在のローカル設定: `dungeonClearIntervalMs := 3000`, `reentryMoveY := -37`, `escapeMoveY := 38`, `ascendIntervalMs := 200000`
   - ダンジョンボタン位置候補: 上から1つ目 `(80, 130)`, 上から2つ目 `(80, 98)`, 上から3つ目 `(80, 60)`, 上から4つ目 `(80, 22)`, 上から5つ目 `(80, -16)`, 永傷の女王:V級 `(-80, 25)`
 - GUIのAHK候補に新規追加ファイルが必要になった場合、`macro_files()` の抽出条件で表示されるか確認する
 - サブスキルON専用の `skill_ascend_sale` 派生ファイルが必要な場合は、ファイル作成、検証、README更新、push要否を確認する
@@ -188,11 +185,12 @@ git status -sb
 - `vrchat_party_macro_skill.ahk`: スキル通常周回
 - `vrchat_party_macro_skill_ascend.ahk`: スキル周回 + 転生
 - `vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk`: Vclass minion向け通常周回 + 転生。再入場ボタン1回クリック
+- `vrchat_party_macro_skill_ascend_Vclass_minion_laps_fast.ahk`: Vclass minion向け高速周回 + 転生。メインスキル1と再入場を80ms移動で直接往復し、メインスキル1は約50ms間隔で連打。再入場クリック後待機は50ms。転生前だけAutoスキル位置へ戻る。売却なし
 - `vrchat_party_macro_skill_sale.ahk`: スキル周回 + 売却。転生はコメントアウトで無効化されている箇所がある
 - `vrchat_party_macro_skill_ascend_sale.ahk`: スキル周回 + 転生 + 売却
 - `vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk`: 改変ダンジョン用。ダンジョンクリア待機、サブスキル1、再入場1回クリックのループ + 転生 + 売却
 - `vrchat_party_macro_skill_ascend_secret_dungeon.ahk`: サブスキル、Autoスキル、待機、再入場ボタン1回クリックのループ + 転生。売却なし。Autoスキル位置中心
-- `vrchat_party_macro_skill_infinite_dungeon.ahk`: 初回だけAutoスキル位置を起点にし、その後はメインスキルとサブスキルを直接行き来して交互に1回ずつクリック
+- `vrchat_party_macro_skill_infinite_dungeon.ahk`: 初回だけAutoスキル位置を起点にし、その後はメインスキルとサブスキルを80ms移動で直接行き来して交互に1回ずつクリック
 - `vrchat_party_macro_skill_infinite_dungeon_laps.ahk`: 無限ダンジョン用。毎ループでサブスキル、Autoスキル、再入場位置クリック、Autoスキル位置戻し
 - `docs/ai_context.md`: AI引き継ぎ用ドキュメント。このファイル
 
@@ -249,6 +247,12 @@ git diff --stat
 
 ## 更新履歴
 
+- 2026-07-04: 再入場と逃げるのY座標を分離。再入場は `reentryMoveY := -37`、逃げるは `escapeMoveY := 38`。旧 `topLeftMoveX/Y` は古いローカルconfig向けの互換フォールバックとしてのみ残した。
+- 2026-07-04: `vrchat_party_macro_skill_infinite_dungeon.ahk` の通常ループ末尾待機を10ms、通常ループのVRChatアクティブ化後待機を20msに短縮。F9停止時の100ms待機は維持。
+- 2026-07-04: `vrchat_party_macro_skill_infinite_dungeon.ahk` のメインスキル/サブスキル間の直接移動時間を、このマクロ専用の `infiniteDungeonSkillMoveMs := 80` に変更。
+- 2026-07-04: `vrchat_party_macro_skill_infinite_dungeon.ahk` の専用クリック後待機 `infiniteDungeonSkillBetweenClickMs` を廃止し、共通 `afterClickWaitMs := 50` を使うように変更。configとREADMEから専用設定を削除。
+- 2026-07-04: 共通クリック待機を `afterClickWaitMs := 50` と `betweenRepeatClickMs := 50` に分離。旧 `betweenClickMs` はconfigから外し、古いローカルconfig向けの互換フォールバックとしてのみ残した。
+- 2026-07-04: `vrchat_party_macro_skill_ascend_Vclass_minion_laps_fast.ahk` を追加。F8開始時と転生後のみAutoスキルをクリックし、通常ループはAutoスキル位置へ戻らずメインスキル1と再入場を直接往復する。転生前のみAutoスキル位置へ戻す。メインスキル1は約50ms間隔、メインスキル1と再入場の移動時間は80ms、再入場クリック後待機は50ms、通常ループのVRChatアクティブ化後待機は20ms。READMEへAutoスキル分類と説明を追記。
 - 2026-07-02: `vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk` を、F8開始時と転生/売却後のみAutoスキルをクリックし、通常ループはダンジョンクリア待機、サブスキル1、再入場1回クリックだけに変更。未使用になったメインスキル2設定と改変ダンジョンWP待機設定を削除。
 - 2026-07-01: 未使用になった `vrchat_party_macro_skill_ascend_sale_overlord.ahk` を削除。READMEへAutoスキルクリックタイミングの3分類を追加。
 - 2026-07-01: `vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk` の転生/売却後Autoスキル再開を削除。通常ループ先頭でAutoスキルをクリックする設計のため、二重クリックでAutoが解除されないようにした。
@@ -263,7 +267,7 @@ git diff --stat
 - 2026-07-01: 共通化レビューにあわせて不要になった `vrchat_party_macro_skill_Vclass_minion_laps.ahk` を削除。READMEと引き継ぎメモの一覧・説明を更新。
 - 2026-07-01: GUIで `_ascend` と `_sale` のどちらも含まないマクロを選択した場合、ダンジョンボタン位置プルダウンも非活性化。保存時は現在のconfig値を維持。
 - 2026-07-01: GUIで選択中AHKに応じて未使用の間隔欄を非活性化。`_ascend` を含むマクロだけ転生間隔、`_sale` を含むマクロだけ売却間隔を有効化し、`vrchat_party_macro_skill_infinite_dungeon.ahk` はダンジョンクリア間隔も無効化。
-- 2026-07-01: `vrchat_party_macro_skill_infinite_dungeon.ahk` だけクリック後待機を短縮。専用設定 `infiniteDungeonSkillBetweenClickMs := 80` を追加し、共通 `betweenClickMs` から切り離した。
+- 2026-07-01: `vrchat_party_macro_skill_infinite_dungeon.ahk` だけクリック後待機を短縮。後に共通 `afterClickWaitMs := 50` へ統合済み。
 - 2026-07-01: `vrchat_party_macro_skill_infinite_dungeon.ahk` を、毎回Autoスキル位置へ戻さず、初回Auto起点後はメインスキル/サブスキル間を直接往復する動作に変更。
 - 2026-07-01: メインスキル座標のYは維持し、Xを `80` に変更。上から1〜4つ目のダンジョンボタンXに合わせた。
 - 2026-07-01: GUIの初期幅を広げ、AHK選択コンボボックスを長いファイル名が見える幅に調整。横方向のリサイズも許可。

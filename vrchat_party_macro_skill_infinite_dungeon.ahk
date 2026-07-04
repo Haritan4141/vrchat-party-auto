@@ -13,6 +13,9 @@ CoordMode "Mouse", "Client"
 global running := false
 global currentSkillMoveX := 0
 global currentSkillMoveY := 0
+global infiniteDungeonSkillMoveMs := 80
+global infiniteDungeonLoopSleepMs := 10
+global infiniteDungeonActivateWaitMs := 20
 
 #Include "vrchat_party_macro_common_actions.ahk"
 
@@ -54,14 +57,14 @@ F9::
 ; =========================
 RunLoop()
 {
-    global running
+    global running, infiniteDungeonLoopSleepMs
 
     if (!running)
         return
 
     while (running) {
         RunAlternatingSkillAction()
-        Sleep 50
+        Sleep infiniteDungeonLoopSleepMs
     }
 }
 
@@ -71,12 +74,13 @@ RunLoop()
 RunAlternatingSkillAction()
 {
     global running, mainSkillMoveX, mainSkillMoveY, subSkillMoveX, subSkillMoveY, vrchatTitle
+    global infiniteDungeonActivateWaitMs
 
     if (!running)
         return false
 
     try WinActivate vrchatTitle
-    Sleep 100
+    Sleep infiniteDungeonActivateWaitMs
 
     if (!MoveToSkillAndClick(mainSkillMoveX, mainSkillMoveY))
         return false
@@ -94,14 +98,14 @@ RunAlternatingSkillAction()
 MoveToSkillAndClick(targetMoveX, targetMoveY)
 {
     global running, currentSkillMoveX, currentSkillMoveY, clickHoldMs
-    global afterMoveClickWaitMs, infiniteDungeonSkillBetweenClickMs
+    global afterMoveClickWaitMs, afterClickWaitMs, infiniteDungeonSkillMoveMs
 
     if (!running)
         return false
 
     dx := targetMoveX - currentSkillMoveX
     dy := targetMoveY - currentSkillMoveY
-    SmoothMouseMoveRel(dx, dy, 250)
+    SmoothMouseMoveRel(dx, dy, infiniteDungeonSkillMoveMs)
     if (!running)
         return false
 
@@ -113,7 +117,7 @@ MoveToSkillAndClick(targetMoveX, targetMoveY)
     currentSkillMoveY := targetMoveY
 
     LeftClick(clickHoldMs)
-    SleepInterruptible(infiniteDungeonSkillBetweenClickMs)
+    SleepInterruptible(afterClickWaitMs)
 
     return running
 }

@@ -105,7 +105,7 @@ RunSecretDungeonAction()
 ; =========================
 RunReentryAction()
 {
-    global running, topLeftMoveX, topLeftMoveY, vrchatTitle
+    global running, vrchatTitle
 
     if (!running)
         return false
@@ -113,7 +113,7 @@ RunReentryAction()
     try WinActivate vrchatTitle
     Sleep 100
 
-    if (!MoveClickAndReturn(-topLeftMoveX, -topLeftMoveY, 1))
+    if (!ClickReentryButton(1))
         return false
 
     return running

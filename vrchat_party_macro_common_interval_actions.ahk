@@ -2,10 +2,13 @@
 
 if (A_LineFile = A_ScriptFullPath) {
     running := false
-    topLeftMoveX := 0
-    topLeftMoveY := 0
+    reentryMoveX := 0
+    reentryMoveY := 0
+    escapeMoveX := 0
+    escapeMoveY := 0
     clickHoldMs := 0
-    betweenClickMs := 0
+    afterClickWaitMs := 0
+    betweenRepeatClickMs := 0
     dungeonClearIntervalMs := 0
     ascendIntervalMs := 0
     saleIntervalMs := 0
@@ -114,7 +117,7 @@ RunSaleActionIfDue()
 ; =========================
 DoSaleAction()
 {
-    global running, topLeftMoveX, topLeftMoveY, dungeonLeftMoveX, dungeonLeftMoveY, vrchatTitle
+    global running, escapeMoveX, escapeMoveY, dungeonLeftMoveX, dungeonLeftMoveY, vrchatTitle
 
     if (!running)
         return false
@@ -123,7 +126,7 @@ DoSaleAction()
     Sleep 100
 
     ; 逃げるボタンクリック
-    if (!MoveClickAndReturn(-topLeftMoveX, topLeftMoveY, 1))
+    if (!MoveClickAndReturn(escapeMoveX, escapeMoveY, 1))
         return false
 
     ; メインメニューへ戻るボタンクリック
@@ -163,7 +166,7 @@ DoSaleAction()
 ; =========================
 DoAscendAction()
 {
-    global running, topLeftMoveX, topLeftMoveY, ascendLeftMoveX, ascendLeftMoveY, dungeonLeftMoveX, dungeonLeftMoveY, vrchatTitle
+    global running, escapeMoveX, escapeMoveY, ascendLeftMoveX, ascendLeftMoveY, dungeonLeftMoveX, dungeonLeftMoveY, vrchatTitle
 
     if (!running)
         return false
@@ -172,7 +175,7 @@ DoAscendAction()
     Sleep 100
 
     ; 逃げるボタンクリック
-    if (!MoveClickAndReturn(-topLeftMoveX, topLeftMoveY, 1))
+    if (!MoveClickAndReturn(escapeMoveX, escapeMoveY, 1))
         return false
 
     ; 転生ボタンクリック
