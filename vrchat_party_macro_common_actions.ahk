@@ -146,13 +146,17 @@ SmoothMouseMoveRel(dx, dy, totalMs := 250, stepMs := 16)
 {
     global running
     steps := Max(1, Floor(totalMs / stepMs))
-    sx := dx / steps
-    sy := dy / steps
+    movedX := 0
+    movedY := 0
 
     Loop steps {
         if (!running)
             return
-        MouseMoveRel(Round(sx), Round(sy))
+        targetX := Round(dx * A_Index / steps)
+        targetY := Round(dy * A_Index / steps)
+        MouseMoveRel(targetX - movedX, targetY - movedY)
+        movedX := targetX
+        movedY := targetY
         Sleep stepMs
     }
 }

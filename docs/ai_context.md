@@ -69,6 +69,7 @@ python -m py_compile .\vrchat_party_macro_gui.py
 - `ResetAscendActionTimer()` / `ResetSaleActionTimer()` / `RunAscendActionIfDue()` / `RunSaleActionIfDue()` は `vrchat_party_macro_common_interval_actions.ahk` に共通化済み
 - サブスキル座標は `subSkillMoveX := 300`, `subSkillMoveY := -50`。メインスキル1暫定座標は `mainSkillMoveX := 80`, `mainSkillMoveY := -48`
 - `vrchat_party_macro_skill_infinite_dungeon.ahk` のクリック後待機も共通 `afterClickWaitMs := 50` に揃えた。同じ位置の複数回クリックはないため `betweenRepeatClickMs` は通常使わない。スキル間の移動時間はこのマクロ専用で `infiniteDungeonSkillMoveMs := 80`。ループ末尾待機は `infiniteDungeonLoopSleepMs := 10`、通常ループのVRChatアクティブ化後待機は `infiniteDungeonActivateWaitMs := 20`
+- `SmoothMouseMoveRel()` は累積目標位置との差分で移動する。短い移動時間で分割数が少ない場合でも、`mainSkillMoveY := -48` などの設定値どおりの合計移動量になる
 - `vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk` はF8開始時と転生/売却後のみAutoスキルをクリックする。通常ループはダンジョンクリア待機、サブスキル1、再入場1回クリック
 - `vrchat_party_macro_skill_infinite_dungeon_laps.ahk` は無限ダンジョン用で、毎ループでサブスキル2回クリック、Autoスキル有効化、再入場位置クリック、Autoスキル位置戻しを行う
 - `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` は、サブスキル2回クリック、Autoスキル有効化、`dungeonClearIntervalMs` 待機、再入場ボタン1回クリックを繰り返す。売却は行わず、`ascendIntervalMs` ごとに逃げる、転生、ダンジョン選択を行う
