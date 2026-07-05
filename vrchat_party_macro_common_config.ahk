@@ -11,7 +11,7 @@ escapeMoveY := 38        ; Autoスキルから逃げるまでの量Y
 ascendLeftMoveX := 970   ; 転生ボタン方向に動かす量X
 ascendLeftMoveY := 45    ; 転生ボタン方向に動かす量Y
 mainSkillMoveX := 80     ; Autoスキルからメインスキル1ボタンまでの量X
-mainSkillMoveY := -46    ; Autoスキルからメインスキル1ボタンまでの量Y
+mainSkillMoveY := -40    ; Autoスキルからメインスキル1ボタンまでの量Y
 subSkillMoveX := 300     ; Autoスキルからサブスキル1ボタンまでの量X
 subSkillMoveY := -50     ; Autoスキルからサブスキル1ボタンまでの量Y
 ; ダンジョンボタン位置
