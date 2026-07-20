@@ -26,7 +26,7 @@ subSkillMoveY := -50     ; Autoスキルからサブスキル1ボタンまでの
 ;dungeonButtonMoveX := 80    ; 上から5つ目
 ;dungeonButtonMoveY := -16    ; 上から5つ目
 dungeonButtonMoveX := -80   ; 永傷の女王:V級
-dungeonButtonMoveY := 25    ; 永傷の女王:V級
+dungeonButtonMoveY := 80    ; 永傷の女王:V級
 dungeonLeftMoveX := dungeonButtonMoveX
 dungeonLeftMoveY := dungeonButtonMoveY
 

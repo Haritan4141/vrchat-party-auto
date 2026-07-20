@@ -103,7 +103,7 @@ python -m py_compile .\vrchat_party_macro_gui.py
 - `README.md` の共通設定例が現在の `vrchat_party_macro_common_config.ahk` と一致しているか確認する
   - README例: `dungeonClearIntervalMs := 4500`, `reentryMoveY := -37`, `escapeMoveY := 38`
   - 現在のローカル設定: `dungeonClearIntervalMs := 3000`, `reentryMoveY := -37`, `escapeMoveY := 38`, `ascendIntervalMs := 200000`
-  - ダンジョンボタン位置候補: 上から1つ目 `(80, 130)`, 上から2つ目 `(80, 98)`, 上から3つ目 `(80, 60)`, 上から4つ目 `(80, 22)`, 上から5つ目 `(80, -16)`, 永傷の女王:V級 `(-80, 25)`
+  - ダンジョンボタン位置候補: 上から1つ目 `(80, 130)`, 上から2つ目 `(80, 98)`, 上から3つ目 `(80, 60)`, 上から4つ目 `(80, 22)`, 上から5つ目 `(80, -16)`, 永傷の女王:V級 `(-80, 80)`
 - GUIのAHK候補に新規追加ファイルが必要になった場合、`macro_files()` の抽出条件で表示されるか確認する
 - サブスキルON専用の `skill_ascend_sale` 派生ファイルが必要な場合は、ファイル作成、検証、README更新、push要否を確認する
 
@@ -248,6 +248,7 @@ git diff --stat
 
 ## 更新履歴
 
+- 2026-07-21: `永傷の女王:V級` のボタン位置変更に合わせ、Y座標を `25` から `80` へ変更。画面上では55px上方向へ調整。
 - 2026-07-04: 古いconfig対応を削除。現行の `reentryMoveX/Y`、`escapeMoveX/Y`、`afterClickWaitMs`、`betweenRepeatClickMs` を必須設定として扱う。
 - 2026-07-04: 再入場と逃げるのY座標を分離。再入場は `reentryMoveY := -37`、逃げるは `escapeMoveY := 38`。
 - 2026-07-04: `vrchat_party_macro_skill_infinite_dungeon.ahk` の通常ループ末尾待機を10ms、通常ループのVRChatアクティブ化後待機を20msに短縮。F9停止時の100ms待機は維持。
