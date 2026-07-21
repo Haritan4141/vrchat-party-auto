@@ -16,11 +16,12 @@ global currentFastMoveX := 0
 global currentFastMoveY := 0
 global fastVclassMoveMs := 48
 global fastVclassAfterMoveClickWaitMs := 30
-global fastVclassLoopActivateWaitMs := 10
-global fastVclassLoopSleepMs := 20
+global fastVclassReentryBeforeClickWaitMs := 50
+global fastVclassLoopActivateWaitMs := 20
+global fastVclassLoopSleepMs := 50
 global fastVclassMainSkillClickHoldMs := 10
 global fastVclassMainSkillClickIntervalMs := 20
-global fastVclassReentryClickHoldMs := 40
+global fastVclassReentryClickHoldMs := 60
 global fastVclassReentryAfterClickWaitMs := 50
 
 #Include "vrchat_party_macro_common_interval_actions.ahk"
@@ -100,6 +101,7 @@ RunFastVclassMinionAction()
 {
     global running, dungeonClearIntervalMs, vrchatTitle
     global mainSkillMoveX, mainSkillMoveY, reentryMoveX, reentryMoveY
+    global fastVclassAfterMoveClickWaitMs, fastVclassReentryBeforeClickWaitMs
     global fastVclassLoopActivateWaitMs, fastVclassReentryClickHoldMs, fastVclassReentryAfterClickWaitMs
 
     if (!running)
@@ -110,7 +112,7 @@ RunFastVclassMinionAction()
     if (!running)
         return false
 
-    if (!MoveFastVclassCursorTo(mainSkillMoveX, mainSkillMoveY))
+    if (!MoveFastVclassCursorTo(mainSkillMoveX, mainSkillMoveY, fastVclassAfterMoveClickWaitMs))
         return false
 
     endTick := A_TickCount + dungeonClearIntervalMs
@@ -122,7 +124,7 @@ RunFastVclassMinionAction()
     if (!running)
         return false
 
-    if (!MoveFastVclassCursorTo(reentryMoveX, reentryMoveY))
+    if (!MoveFastVclassCursorTo(reentryMoveX, reentryMoveY, fastVclassReentryBeforeClickWaitMs))
         return false
 
     return ClickFastVclassCurrentPosition(fastVclassReentryClickHoldMs, fastVclassReentryAfterClickWaitMs)
@@ -134,10 +136,10 @@ FastVclassAscendActionIsDue()
     return running && (A_TickCount - lastAscendActionTick >= ascendIntervalMs)
 }
 
-MoveFastVclassCursorTo(targetMoveX, targetMoveY)
+MoveFastVclassCursorTo(targetMoveX, targetMoveY, afterMoveWaitMs)
 {
     global running, currentFastMoveX, currentFastMoveY
-    global fastVclassMoveMs, fastVclassAfterMoveClickWaitMs
+    global fastVclassMoveMs
 
     if (!running)
         return false
@@ -149,7 +151,7 @@ MoveFastVclassCursorTo(targetMoveX, targetMoveY)
         if (!running)
             return false
 
-        SleepInterruptible(fastVclassAfterMoveClickWaitMs)
+        SleepInterruptible(afterMoveWaitMs)
         if (!running)
             return false
     }
@@ -181,5 +183,6 @@ ClickFastVclassCurrentPosition(holdMs, postClickWaitMs)
 
 ReturnFastVclassCursorToAuto()
 {
-    return MoveFastVclassCursorTo(0, 0)
+    global fastVclassAfterMoveClickWaitMs
+    return MoveFastVclassCursorTo(0, 0, fastVclassAfterMoveClickWaitMs)
 }

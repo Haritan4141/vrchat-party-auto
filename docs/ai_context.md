@@ -36,7 +36,7 @@ python -m py_compile .\vrchat_party_macro_gui.py
 
 - 新規マクロがGUIのAHK候補に表示される
 - F8開始時と転生後のみAutoスキルをクリックする
-- 通常ループはAutoスキル位置へ毎回戻らず、メインスキル1と再入場ボタンを直接往復する。転生タイミングのみAutoスキル位置へ戻す。`fast` はメインスキル1を約50ms間隔、`veryfast` は約20ms間隔で連打する。両方とも移動時間は48ms、移動後待機は30ms、再入場クリックは押下40ms + 待機50ms、通常ループ末尾待機は20ms、VRChatアクティブ化後待機は10ms
+- 通常ループはAutoスキル位置へ毎回戻らず、メインスキル1と再入場ボタンを直接往復する。転生タイミングのみAutoスキル位置へ戻す。`fast` は `d4cc512` 時点の安定設定へ復元。`veryfast` は約20ms連打と48ms移動を維持し、再入場側だけ移動後待機50ms、クリック押下60ms + 待機50ms、ループ末尾50ms、VRChatアクティブ化後20msへ戻している
 - ファイル名に `_sale` がないため、売却ロジックは入れない
 
 変更対象:
@@ -58,8 +58,8 @@ python -m py_compile .\vrchat_party_macro_gui.py
 - `EnableAutoSkill()` はAutoスキルをクリックするだけで、カーソル位置はAutoスキル位置に維持する
 - `DoAction(reentryClickCount := 2)` はAutoスキル位置から再入場位置へ一時移動してクリックし、Autoスキル位置へ戻る。2回クリックは「調べる」→「再入場」、1回クリックは「再入場」のみのパターン
 - `vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk` は、再入場ボタン1回クリックの通常周回に転生ロジックを追加したマクロ
-- `vrchat_party_macro_skill_ascend_Vclass_minion_laps_fast.ahk` は、F8開始時と転生後のみAutoスキルをクリックする。通常ループではAutoスキル位置へ毎回戻らず、メインスキル1位置と再入場位置を直接往復する。転生タイミングのみAutoスキル位置へ戻す。メインスキル1はクリック保持30ms + 待機20msで押し始め基準約50ms間隔。移動時間は48ms、移動後待機は30ms。再入場クリックは押下40ms + 待機50ms。通常ループ末尾待機は20ms、VRChatアクティブ化後待機は10ms。売却なし
-- `vrchat_party_macro_skill_ascend_Vclass_minion_laps_veryfast.ahk` は、`fast` と同じ周回設定でメインスキル1だけをクリック保持10ms + 待機10msの約20ms間隔にした最速版。PC環境によってはクリックを取りこぼす可能性がある
+- `vrchat_party_macro_skill_ascend_Vclass_minion_laps_fast.ahk` は、`d4cc512` 時点の本体へ復元。メインスキル1はクリック保持30ms + 待機20msの約50ms間隔、移動時間80ms、共通移動後待機50ms、再入場クリックは共通押下60ms + 待機50ms、ループ末尾50ms、VRChatアクティブ化後20ms。売却なし
+- `vrchat_party_macro_skill_ascend_Vclass_minion_laps_veryfast.ahk` は、メインスキル1をクリック保持10ms + 待機10msの約20ms間隔で連打する最速版。移動時間48ms、メインスキル側の移動後待機30msを維持し、再入場側は移動後待機50ms、クリック押下60ms + 待機50ms、ループ末尾50ms、VRChatアクティブ化後20ms。売却なし
 - `DoSaleAction()` / `DoAscendAction()` はAutoスキル位置開始・Autoスキル位置終了を前提にし、逃げる、売却または転生、ダンジョン選択までを担当する。Autoスキルクリックとサブスキルクリックは各マクロ本体側で行う
 - `ReturnPositionToAutoSkill()` は残しているが、通常の転生・売却・独自ループからは呼び出さない
 - `MoveClickAndReturn(dx, dy, clickCount, moveMs)` により、移動、クリック、戻りを共通化済み
@@ -188,8 +188,8 @@ git status -sb
 - `vrchat_party_macro_skill.ahk`: スキル通常周回
 - `vrchat_party_macro_skill_ascend.ahk`: スキル周回 + 転生
 - `vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk`: Vclass minion向け通常周回 + 転生。再入場ボタン1回クリック
-- `vrchat_party_macro_skill_ascend_Vclass_minion_laps_fast.ahk`: Vclass minion向け高速周回 + 転生。メインスキル1は約50ms間隔で連打。移動時間は48ms、移動後待機は30ms、再入場クリックは押下40ms + 待機50ms、ループ末尾待機は20ms、VRChatアクティブ化後待機は10ms。転生前だけAutoスキル位置へ戻る。売却なし
-- `vrchat_party_macro_skill_ascend_Vclass_minion_laps_veryfast.ahk`: `fast` と同じ周回設定で、メインスキル1だけを約20ms間隔で連打する最速版。売却なし
+- `vrchat_party_macro_skill_ascend_Vclass_minion_laps_fast.ahk`: Vclass minion向け安定周回 + 転生。`d4cc512` 時点の本体設定。メインスキル1は約50ms間隔、移動時間80ms、移動後待機50ms。売却なし
+- `vrchat_party_macro_skill_ascend_Vclass_minion_laps_veryfast.ahk`: 約20ms連打と48ms移動の最速版。再入場側は移動後待機50ms、クリック押下60ms、クリック後50ms、ループ末尾50msとして安定性を確保。売却なし
 - `vrchat_party_macro_skill_sale.ahk`: スキル周回 + 売却。転生はコメントアウトで無効化されている箇所がある
 - `vrchat_party_macro_skill_ascend_sale.ahk`: スキル周回 + 転生 + 売却
 - `vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk`: 改変ダンジョン用。ダンジョンクリア待機、サブスキル1、再入場1回クリックのループ + 転生 + 売却
@@ -251,6 +251,7 @@ git diff --stat
 
 ## 更新履歴
 
+- 2026-07-21: Vclass `fast` 本体を `d4cc512` 時点へ復元。`veryfast` は20ms連打と48ms移動を維持し、再入場側だけ移動後待機50ms、クリック押下60ms、クリック後50ms、ループ末尾50ms、VRChatアクティブ化後20msへ戻した。
 - 2026-07-21: Vclass `fast` / `veryfast` のマウス移動時間を32msから48msへ変更。16ms刻みの3ステップ移動として安定性を優先。
 - 2026-07-21: サブPCでの安定性を優先し、Vclass `fast` のメインスキル1連打を50ms（押下30ms + 待機20ms）へ戻した。`veryfast` は20msを維持。
 - 2026-07-21: 20ms連打版を `vrchat_party_macro_skill_ascend_Vclass_minion_laps_veryfast.ahk` として分離。既存の `fast` は移動・再入場設定を維持し、メインスキル1の連打を30ms（押下20ms + 待機10ms）へ戻した。

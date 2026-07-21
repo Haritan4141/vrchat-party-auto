@@ -14,13 +14,10 @@ global running := false
 global lastAscendActionTick := 0
 global currentFastMoveX := 0
 global currentFastMoveY := 0
-global fastVclassMoveMs := 48
-global fastVclassAfterMoveClickWaitMs := 30
-global fastVclassLoopActivateWaitMs := 10
-global fastVclassLoopSleepMs := 20
+global fastVclassMoveMs := 80
+global fastVclassLoopActivateWaitMs := 20
 global fastVclassMainSkillClickHoldMs := 30
 global fastVclassMainSkillClickIntervalMs := 50
-global fastVclassReentryClickHoldMs := 40
 global fastVclassReentryAfterClickWaitMs := 50
 
 #Include "vrchat_party_macro_common_interval_actions.ahk"
@@ -74,7 +71,7 @@ F7::
 ; =========================
 RunLoop()
 {
-    global running, fastVclassLoopSleepMs
+    global running
 
     if (!running)
         return
@@ -89,7 +86,7 @@ RunLoop()
             if (!EnableAutoSkill())
                 return
         }
-        SleepInterruptible(fastVclassLoopSleepMs)
+        Sleep 50
     }
 }
 
@@ -100,7 +97,7 @@ RunFastVclassMinionAction()
 {
     global running, dungeonClearIntervalMs, vrchatTitle
     global mainSkillMoveX, mainSkillMoveY, reentryMoveX, reentryMoveY
-    global fastVclassLoopActivateWaitMs, fastVclassReentryClickHoldMs, fastVclassReentryAfterClickWaitMs
+    global clickHoldMs, fastVclassLoopActivateWaitMs, fastVclassReentryAfterClickWaitMs
 
     if (!running)
         return false
@@ -125,7 +122,7 @@ RunFastVclassMinionAction()
     if (!MoveFastVclassCursorTo(reentryMoveX, reentryMoveY))
         return false
 
-    return ClickFastVclassCurrentPosition(fastVclassReentryClickHoldMs, fastVclassReentryAfterClickWaitMs)
+    return ClickFastVclassCurrentPosition(clickHoldMs, fastVclassReentryAfterClickWaitMs)
 }
 
 FastVclassAscendActionIsDue()
@@ -137,7 +134,7 @@ FastVclassAscendActionIsDue()
 MoveFastVclassCursorTo(targetMoveX, targetMoveY)
 {
     global running, currentFastMoveX, currentFastMoveY
-    global fastVclassMoveMs, fastVclassAfterMoveClickWaitMs
+    global afterMoveClickWaitMs, fastVclassMoveMs
 
     if (!running)
         return false
@@ -149,7 +146,7 @@ MoveFastVclassCursorTo(targetMoveX, targetMoveY)
         if (!running)
             return false
 
-        SleepInterruptible(fastVclassAfterMoveClickWaitMs)
+        SleepInterruptible(afterMoveClickWaitMs)
         if (!running)
             return false
     }
