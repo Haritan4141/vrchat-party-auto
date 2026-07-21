@@ -18,8 +18,8 @@ global fastVclassMoveMs := 32
 global fastVclassAfterMoveClickWaitMs := 30
 global fastVclassLoopActivateWaitMs := 10
 global fastVclassLoopSleepMs := 20
-global fastVclassMainSkillClickHoldMs := 20
-global fastVclassMainSkillClickIntervalMs := 30
+global fastVclassMainSkillClickHoldMs := 30
+global fastVclassMainSkillClickIntervalMs := 50
 global fastVclassReentryClickHoldMs := 40
 global fastVclassReentryAfterClickWaitMs := 50
 
