@@ -202,6 +202,7 @@ vrchat_party_macro_skill_ascend_sale.ahk
 vrchat_party_macro_skill_ascend_sale_modified_dungeon.ahk
 vrchat_party_macro_skill_ascend_Vclass_minion_laps.ahk
 vrchat_party_macro_skill_ascend_Vclass_minion_laps_fast.ahk
+vrchat_party_macro_skill_ascend_Vclass_minion_laps_veryfast.ahk
 ```
 
 ### 3. Autoスキルをクリックしない / F8のみ
@@ -249,7 +250,13 @@ vrchat_party_macro_skill.ahk: F8開始時のみAutoスキルクリック。転�
 
 `vrchat_party_macro_skill_ascend_Vclass_minion_laps_fast.ahk`
 
-F8開始時と転生後のみAutoスキルをクリックします。通常ループはAutoスキル位置へ毎回戻らず、メインスキル1と再入場ボタンを直接往復します。転生タイミングのみAutoスキル位置へ戻してから転生アクションへ入ります。メインスキル1の連打間隔は約20ms（押下10ms + 待機10ms）です。メインスキル1と再入場の移動時間は32ms、移動後待機は30msです。再入場クリックは押下40ms + 待機50ms、通常ループ末尾待機は20ms、VRChatアクティブ化後待機は10msです。
+F8開始時と転生後のみAutoスキルをクリックします。通常ループはAutoスキル位置へ毎回戻らず、メインスキル1と再入場ボタンを直接往復します。転生タイミングのみAutoスキル位置へ戻してから転生アクションへ入ります。メインスキル1の連打間隔は約30ms（押下20ms + 待機10ms）です。メインスキル1と再入場の移動時間は32ms、移動後待機は30msです。再入場クリックは押下40ms + 待機50ms、通常ループ末尾待機は20ms、VRChatアクティブ化後待機は10msです。
+
+### 永傷の女王:V級ダンジョン 雑魚狩り金策（最速）
+
+`vrchat_party_macro_skill_ascend_Vclass_minion_laps_veryfast.ahk`
+
+高速版と同じ周回設定で、メインスキル1だけを約20ms間隔（押下10ms + 待機10ms）で連打します。PC環境によってはクリックを取りこぼす可能性があります。
 
 ### 改変ダンジョン
 
