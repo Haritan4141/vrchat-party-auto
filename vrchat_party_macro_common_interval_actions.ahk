@@ -32,6 +32,11 @@ if (!IsSet(ascendIntervalMs))
 if (!IsSet(saleIntervalMs))
     saleIntervalMs := 0
 
+; F6/F7の単体テストだけ、各クリック位置と移動経路を目視しやすくする。
+testActionMoveMs := 800
+testActionBeforeClickWaitMs := 500
+testActionAfterReturnWaitMs := 300
+
 ResetAscendActionTimer()
 {
     global lastAscendActionTick
@@ -46,7 +51,7 @@ ResetSaleActionTimer()
 
 TestSaleAction()
 {
-    global running
+    global running, testActionMoveMs, testActionBeforeClickWaitMs, testActionAfterReturnWaitMs
 
     if (running) {
         ToolTip "Stop macro before F6 test"
@@ -56,7 +61,7 @@ TestSaleAction()
 
     running := true
     ToolTip "Testing sale action"
-    DoSaleAction()
+    DoSaleAction(testActionMoveMs, testActionBeforeClickWaitMs, testActionAfterReturnWaitMs)
     running := false
     NeutralizeInputs()
 
@@ -66,7 +71,7 @@ TestSaleAction()
 
 TestAscendAction()
 {
-    global running
+    global running, testActionMoveMs, testActionBeforeClickWaitMs, testActionAfterReturnWaitMs
 
     if (running) {
         ToolTip "Stop macro before F7 test"
@@ -76,7 +81,7 @@ TestAscendAction()
 
     running := true
     ToolTip "Testing ascend action"
-    DoAscendAction()
+    DoAscendAction(testActionMoveMs, testActionBeforeClickWaitMs, testActionAfterReturnWaitMs)
     running := false
     NeutralizeInputs()
 
@@ -115,7 +120,7 @@ RunSaleActionIfDue()
 ; =========================
 ; 売却アクション
 ; =========================
-DoSaleAction()
+DoSaleAction(moveMs := 250, beforeClickWaitMs := -1, afterReturnWaitMs := 0)
 {
     global running, escapeMoveX, escapeMoveY, dungeonLeftMoveX, dungeonLeftMoveY, vrchatTitle
 
@@ -126,35 +131,35 @@ DoSaleAction()
     Sleep 100
 
     ; 逃げるボタンクリック
-    if (!MoveClickAndReturn(escapeMoveX, escapeMoveY, 1))
+    if (!MoveClickAndReturn(escapeMoveX, escapeMoveY, 1, moveMs, beforeClickWaitMs, afterReturnWaitMs))
         return false
 
     ; メインメニューへ戻るボタンクリック
-    if (!MoveClickAndReturn(100, 100, 1))
+    if (!MoveClickAndReturn(80, 108, 1, moveMs, beforeClickWaitMs, afterReturnWaitMs))
         return false
 
     ; 預かり所ボタンクリック
-    if (!MoveClickAndReturn(50, 50, 1))
+    if (!MoveClickAndReturn(80, 40, 1, moveMs, beforeClickWaitMs, afterReturnWaitMs))
         return false
 
     ; 売却モードボタンクリック
-    if (!MoveClickAndReturn(380, 100, 1))
+    if (!MoveClickAndReturn(380, 110, 1, moveMs, beforeClickWaitMs, afterReturnWaitMs))
         return false
 
     ; 紫以下売却ボタンクリック
-    if (!MoveClickAndReturn(600, 100, 2))
+    if (!MoveClickAndReturn(590, 100, 2, moveMs, beforeClickWaitMs, afterReturnWaitMs))
         return false
 
     ; メインメニューへ戻るボタンクリック
-    if (!MoveClickAndReturn(100, 100, 1))
+    if (!MoveClickAndReturn(100, 100, 1, moveMs, beforeClickWaitMs, afterReturnWaitMs))
         return false
 
     ; 冒険に出るボタンクリック
-    if (!MoveClickAndReturn(50, -20, 1))
+    if (!MoveClickAndReturn(80, -15, 1, moveMs, beforeClickWaitMs, afterReturnWaitMs))
         return false
 
     ; ダンジョンボタンクリック
-    if (!MoveClickAndReturn(dungeonLeftMoveX, -dungeonLeftMoveY, 1))
+    if (!MoveClickAndReturn(dungeonLeftMoveX, -dungeonLeftMoveY, 1, moveMs, beforeClickWaitMs, afterReturnWaitMs))
         return false
 
     ; Autoスキルとサブスキルの再開処理は各マクロ側で行う。
@@ -164,7 +169,7 @@ DoSaleAction()
 ; =========================
 ; 転生アクション
 ; =========================
-DoAscendAction()
+DoAscendAction(moveMs := 250, beforeClickWaitMs := -1, afterReturnWaitMs := 0)
 {
     global running, escapeMoveX, escapeMoveY, ascendLeftMoveX, ascendLeftMoveY, dungeonLeftMoveX, dungeonLeftMoveY, vrchatTitle
 
@@ -175,15 +180,15 @@ DoAscendAction()
     Sleep 100
 
     ; 逃げるボタンクリック
-    if (!MoveClickAndReturn(escapeMoveX, escapeMoveY, 1))
+    if (!MoveClickAndReturn(escapeMoveX, escapeMoveY, 1, moveMs, beforeClickWaitMs, afterReturnWaitMs))
         return false
 
     ; 転生ボタンクリック
-    if (!MoveClickAndReturn(-ascendLeftMoveX, -ascendLeftMoveY, 1))
+    if (!MoveClickAndReturn(-ascendLeftMoveX, -ascendLeftMoveY, 1, moveMs, beforeClickWaitMs, afterReturnWaitMs))
         return false
 
     ; ダンジョンボタンクリック
-    if (!MoveClickAndReturn(dungeonLeftMoveX, -dungeonLeftMoveY, 1))
+    if (!MoveClickAndReturn(dungeonLeftMoveX, -dungeonLeftMoveY, 1, moveMs, beforeClickWaitMs, afterReturnWaitMs))
         return false
 
     ; Autoスキルとサブスキルの再開処理は各マクロ側で行う。

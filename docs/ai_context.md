@@ -66,7 +66,7 @@ python -m py_compile .\vrchat_party_macro_gui.py
 - マウス移動後、クリック前に `afterMoveClickWaitMs := 50` だけ待機する。通常の `MoveClickAndReturn()` と `vrchat_party_macro_skill_infinite_dungeon.ahk` の直接移動クリックの両方に適用
 - 共通クリック後待機は `afterClickWaitMs := 50`、同じ位置を複数回クリックするときの間隔は `betweenRepeatClickMs := 50`
 - `ClickMainSkill(clickCount)` / `ClickSubSkill(clickCount)` により、スキルボタン座標をconfig経由で利用する
-- `TestSaleAction()` / `TestAscendAction()` はF6/F7用の共通単体テスト。売却/転生アクションのみを実行し、Autoスキルクリックやサブスキルクリックは行わない
+- `TestSaleAction()` / `TestAscendAction()` はF6/F7用の共通単体テスト。売却/転生アクションのみを実行し、Autoスキルクリックやサブスキルクリックは行わない。単体テスト時だけ各ボタンへ800msで移動し、クリック前500ms、中央へ戻った後300ms停止して位置を目視確認できる。通常アクションは従来速度を維持
 - `RunAscendActionIfDue()` / `RunSaleActionIfDue()` は、転生/売却アクションが実行された場合のみ `true` を返す。呼び出し元マクロは `true` のときにAutoスキルやサブスキルの再開処理を行う
 - `ResetAscendActionTimer()` / `ResetSaleActionTimer()` / `RunAscendActionIfDue()` / `RunSaleActionIfDue()` は `vrchat_party_macro_common_interval_actions.ahk` に共通化済み
 - サブスキル座標は `subSkillMoveX := 300`, `subSkillMoveY := -50`。メインスキル1暫定座標は `mainSkillMoveX := 80`, `mainSkillMoveY := -40`
@@ -251,6 +251,8 @@ git diff --stat
 
 ## 更新履歴
 
+- 2026-08-04: 逃げる、転生、上から1つ目のダンジョン、売却導線内の各ボタン座標を実機確認に合わせて微調整。
+- 2026-08-03: F6/F7単体テスト専用の低速確認動作を追加。各ボタンへ800msで移動し、クリック前500ms、中央復帰後300ms停止する。通常の転生・売却は従来速度を維持。
 - 2026-07-21: Vclass `fast` 本体を `d4cc512` 時点へ復元。`veryfast` は20ms連打と48ms移動を維持し、再入場側だけ移動後待機50ms、クリック押下60ms、クリック後50ms、ループ末尾50ms、VRChatアクティブ化後20msへ戻した。
 - 2026-07-21: Vclass `fast` / `veryfast` のマウス移動時間を32msから48msへ変更。16ms刻みの3ステップ移動として安定性を優先。
 - 2026-07-21: サブPCでの安定性を優先し、Vclass `fast` のメインスキル1連打を50ms（押下30ms + 待機20ms）へ戻した。`veryfast` は20msを維持。

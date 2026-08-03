@@ -107,10 +107,10 @@ saleIntervalMs := 300000         ; 売却間隔
 ```ahk
 reentryMoveX := -60      ; Autoスキルから再入場までの量X
 reentryMoveY := -37      ; Autoスキルから再入場までの量Y
-escapeMoveX := -60       ; Autoスキルから逃げるまでの量X
-escapeMoveY := 38        ; Autoスキルから逃げるまでの量Y
+escapeMoveX := -58       ; Autoスキルから逃げるまでの量X
+escapeMoveY := 40        ; Autoスキルから逃げるまでの量Y
 ascendLeftMoveX := 970   ; 転生ボタン方向に動かす量X
-ascendLeftMoveY := 45    ; 転生ボタン方向に動かす量Y
+ascendLeftMoveY := 43    ; 転生ボタン方向に動かす量Y
 mainSkillMoveX := 80     ; Autoスキルからメインスキル1ボタンまでの量X
 mainSkillMoveY := -40    ; Autoスキルからメインスキル1ボタンまでの量Y
 subSkillMoveX := 300     ; Autoスキルからサブスキル1ボタンまでの量X
@@ -127,7 +127,7 @@ vrchatTitle := "VRChat"
 
 ```ahk
 dungeonButtonMoveX := 80    ; 上から1つ目
-dungeonButtonMoveY := 130   ; 上から1つ目
+dungeonButtonMoveY := 140   ; 上から1つ目
 ;dungeonButtonMoveX := 80    ; 上から2つ目
 ;dungeonButtonMoveY := 98    ; 上から2つ目
 ;dungeonButtonMoveX := 80    ; 上から3つ目
@@ -178,7 +178,7 @@ vrchat_party_macro_common_interval_actions.ahk
 
 `DoSaleAction()` と `DoAscendAction()` は、逃げる、売却または転生、ダンジョン選択までを担当し、Autoスキル位置へ戻って終了します。Autoスキルクリックやサブスキルクリックは、各マクロ本体側で必要なタイミングに実行します。
 
-F6/F7のテストは `TestSaleAction()` / `TestAscendAction()` で共通化しています。テスト時は売却/転生アクション単体だけを実行し、Autoスキルクリックやサブスキルクリックは行いません。
+F6/F7のテストは `TestSaleAction()` / `TestAscendAction()` で共通化しています。テスト時は売却/転生アクション単体だけを実行し、Autoスキルクリックやサブスキルクリックは行いません。各ボタンへ800msで移動し、クリック前に500ms停止、中央へ戻った後に300ms停止するため、移動経路とクリック位置を目視確認できます。通常の自動転生・売却の速度には影響しません。
 
 ## 各ファイルの説明
 

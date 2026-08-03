@@ -6,17 +6,17 @@ saleIntervalMs := 300000         ; 売却間隔
 ; VRChat party macro shared action settings.
 reentryMoveX := -60      ; Autoスキルから再入場までの量X
 reentryMoveY := -37      ; Autoスキルから再入場までの量Y
-escapeMoveX := -60       ; Autoスキルから逃げるまでの量X
-escapeMoveY := 38        ; Autoスキルから逃げるまでの量Y
+escapeMoveX := -58       ; Autoスキルから逃げるまでの量X
+escapeMoveY := 40        ; Autoスキルから逃げるまでの量Y
 ascendLeftMoveX := 970   ; 転生ボタン方向に動かす量X
-ascendLeftMoveY := 45    ; 転生ボタン方向に動かす量Y
+ascendLeftMoveY := 43    ; 転生ボタン方向に動かす量Y
 mainSkillMoveX := 80     ; Autoスキルからメインスキル1ボタンまでの量X
 mainSkillMoveY := -40    ; Autoスキルからメインスキル1ボタンまでの量Y
 subSkillMoveX := 300     ; Autoスキルからサブスキル1ボタンまでの量X
 subSkillMoveY := -50     ; Autoスキルからサブスキル1ボタンまでの量Y
 ; ダンジョンボタン位置
 ;dungeonButtonMoveX := 80    ; 上から1つ目
-;dungeonButtonMoveY := 130   ; 上から1つ目
+;dungeonButtonMoveY := 140   ; 上から1つ目
 ;dungeonButtonMoveX := 80    ; 上から2つ目
 ;dungeonButtonMoveY := 98    ; 上から2つ目
 ;dungeonButtonMoveX := 80    ; 上から3つ目

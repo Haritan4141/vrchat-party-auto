@@ -112,7 +112,7 @@ LeftClick(holdMs := 60)
     Send "{LButton up}"
 }
 
-MoveClickAndReturn(dx, dy, clickCount := 1, moveMs := 250)
+MoveClickAndReturn(dx, dy, clickCount := 1, moveMs := 250, beforeClickWaitMs := -1, afterReturnWaitMs := 0)
 {
     global running, clickHoldMs, afterClickWaitMs, betweenRepeatClickMs, afterMoveClickWaitMs
 
@@ -123,7 +123,8 @@ MoveClickAndReturn(dx, dy, clickCount := 1, moveMs := 250)
     if (!running)
         return false
 
-    SleepInterruptible(afterMoveClickWaitMs)
+    waitBeforeClickMs := beforeClickWaitMs >= 0 ? beforeClickWaitMs : afterMoveClickWaitMs
+    SleepInterruptible(waitBeforeClickMs)
     if (!running)
         return false
 
@@ -139,6 +140,10 @@ MoveClickAndReturn(dx, dy, clickCount := 1, moveMs := 250)
     }
 
     SmoothMouseMoveRel(-dx, -dy, moveMs)
+    if (!running)
+        return false
+
+    SleepInterruptible(afterReturnWaitMs)
     return running
 }
 
