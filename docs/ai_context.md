@@ -77,6 +77,8 @@ python -m py_compile .\vrchat_party_macro_gui.py
 - `vrchat_party_macro_skill_ascend_secret_dungeon.ahk` は、サブスキル2回クリック、Autoスキル有効化、`dungeonClearIntervalMs` 待機、再入場ボタン1回クリックを繰り返す。売却は行わず、`ascendIntervalMs` ごとに逃げる、転生、ダンジョン選択を行う
 - `vrchat_party_macro_skill_infinite_dungeon.ahk` は、初回だけAutoスキル位置を起点にし、その後はメインスキル位置とサブスキル位置を直接行き来して交互に1回ずつクリックする。転生/売却なし
 - GUIで秒単位の間隔設定とダンジョンボタン位置選択が可能。選択したAHKに応じて未使用のダンジョンクリア/転生/売却間隔欄とダンジョンボタン位置を非活性化する
+- `vrchat_party_macro_click_repeater.ahk` はF8開始後、マクロ自身でカーソルを移動せず現在位置を連打する。クリック保持は20ms固定、GUIの `clickRepeatIntervalMs` は押下開始から次の押下開始までの総間隔で、20ms以上を指定する。設定はGit管理外の `vrchat_party_macro_common_click_repeater_config.ahk` に保存し、未作成時は100msを使う
+- GUIはクリック連打マクロ選択時だけクリック連打間隔を有効化し、ダンジョンクリア/転生/売却間隔とダンジョンボタン位置を無効化する。他のマクロではクリック連打間隔を無効化する
 - GUI実行時は既知のマクロを閉じてから選択したAHKを起動し、多重起動を避ける
 
 調査して分かったこと:
@@ -181,7 +183,9 @@ git status -sb
 
 - `README.md`: セットアップ、GUI、共通設定、操作方法の説明
 - `start_macro_gui.bat`: GUI起動用
-- `vrchat_party_macro_gui.py`: tkinter GUI。秒単位設定、ダンジョンボタン位置選択、AHK起動、多重起動回避を担当
+- `vrchat_party_macro_gui.py`: tkinter GUI。秒単位設定、クリック連打間隔のミリ秒設定、ダンジョンボタン位置選択、AHK起動、多重起動回避を担当
+- `vrchat_party_macro_click_repeater.ahk`: 現在のカーソル位置を設定間隔でクリックする単純連打マクロ
+- `vrchat_party_macro_common_click_repeater_config.ahk`: GUIが生成するクリック連打専用のローカル設定。Git管理対象外
 - `vrchat_party_macro_common_config.ahk`: 共通設定。間隔、クリック時間、移動量、VRChatタイトルなど
 - `vrchat_party_macro_common_actions.ahk`: Autoスキル有効化、位置戻し、通常メイン動作、クリック/移動/待機の共通関数
 - `vrchat_party_macro_common_interval_actions.ahk`: 売却アクション、転生アクション
@@ -251,6 +255,7 @@ git diff --stat
 
 ## 更新履歴
 
+- 2026-08-18: `vrchat_party_macro_click_repeater.ahk` を追加。GUIから20ms以上のクリック連打間隔をミリ秒単位で設定でき、選択時は未使用のダンジョン関連設定を無効化する。設定値はpull競合を避けるためGit管理外の専用ローカルconfigへ保存する。
 - 2026-08-04: 逃げる、転生、上から1つ目のダンジョン、売却導線内の各ボタン座標を実機確認に合わせて微調整。
 - 2026-08-03: F6/F7単体テスト専用の低速確認動作を追加。各ボタンへ800msで移動し、クリック前500ms、中央復帰後300ms停止する。通常の転生・売却は従来速度を維持。
 - 2026-07-21: Vclass `fast` 本体を `d4cc512` 時点へ復元。`veryfast` は20ms連打と48ms移動を維持し、再入場側だけ移動後待機50ms、クリック押下60ms、クリック後50ms、ループ末尾50ms、VRChatアクティブ化後20msへ戻した。

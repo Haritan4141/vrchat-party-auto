@@ -14,6 +14,10 @@ from tkinter import filedialog, messagebox, ttk
 
 ROOT = Path(__file__).resolve().parent
 CONFIG_PATH = ROOT / "vrchat_party_macro_common_config.ahk"
+CLICK_REPEATER_MACRO_NAME = "vrchat_party_macro_click_repeater.ahk"
+CLICK_REPEATER_CONFIG_PATH = ROOT / "vrchat_party_macro_common_click_repeater_config.ahk"
+CLICK_REPEATER_DEFAULT_INTERVAL_MS = 100
+CLICK_REPEATER_MIN_INTERVAL_MS = 20
 SETTING_NAMES = (
     "dungeonClearIntervalMs",
     "ascendIntervalMs",
@@ -45,6 +49,7 @@ class MacroCapabilities:
     uses_ascend_interval: bool
     uses_sale_interval: bool
     uses_dungeon_button_position: bool
+    uses_click_repeat_interval: bool
 
 
 def macro_capabilities(path: Path | None) -> MacroCapabilities:
@@ -54,9 +59,19 @@ def macro_capabilities(path: Path | None) -> MacroCapabilities:
             uses_ascend_interval=True,
             uses_sale_interval=True,
             uses_dungeon_button_position=True,
+            uses_click_repeat_interval=True,
         )
 
     name = path.name.lower()
+    if name == CLICK_REPEATER_MACRO_NAME:
+        return MacroCapabilities(
+            uses_dungeon_clear_interval=False,
+            uses_ascend_interval=False,
+            uses_sale_interval=False,
+            uses_dungeon_button_position=False,
+            uses_click_repeat_interval=True,
+        )
+
     uses_ascend = "_ascend" in name
     uses_sale = "_sale" in name
     return MacroCapabilities(
@@ -64,6 +79,7 @@ def macro_capabilities(path: Path | None) -> MacroCapabilities:
         uses_ascend_interval=uses_ascend,
         uses_sale_interval=uses_sale,
         uses_dungeon_button_position=uses_ascend or uses_sale,
+        uses_click_repeat_interval=False,
     )
 
 
@@ -83,6 +99,41 @@ def seconds_text_to_ms(text: str, label: str) -> int:
     if ms <= 0:
         raise ValueError(f"{label} は1ms以上になる値にしてください。")
     return ms
+
+
+def milliseconds_text_to_ms(text: str, label: str, minimum_ms: int = 1) -> int:
+    stripped = text.strip()
+    if not re.fullmatch(r"\d+", stripped):
+        raise ValueError(f"{label} は整数のミリ秒で入力してください。")
+    value = int(stripped)
+    if value < minimum_ms:
+        raise ValueError(f"{label} は{minimum_ms}ms以上にしてください。")
+    return value
+
+
+def read_click_repeat_interval() -> int:
+    if not CLICK_REPEATER_CONFIG_PATH.is_file():
+        return CLICK_REPEATER_DEFAULT_INTERVAL_MS
+
+    text = CLICK_REPEATER_CONFIG_PATH.read_text(encoding="utf-8-sig")
+    match = re.search(r"^\s*clickRepeatIntervalMs\s*:=\s*(\d+)\b", text, re.MULTILINE)
+    if not match:
+        raise ValueError(
+            f"{CLICK_REPEATER_CONFIG_PATH.name} に clickRepeatIntervalMs が見つかりません。"
+        )
+    return milliseconds_text_to_ms(
+        match.group(1),
+        "クリック連打間隔",
+        CLICK_REPEATER_MIN_INTERVAL_MS,
+    )
+
+
+def write_click_repeat_interval(value: int) -> None:
+    CLICK_REPEATER_CONFIG_PATH.write_text(
+        "; Local click repeater settings.\n"
+        f"clickRepeatIntervalMs := {value}\n",
+        encoding="utf-8-sig",
+    )
 
 
 def dungeon_button_options(text: str | None = None) -> list[DungeonButtonOption]:
@@ -157,6 +208,7 @@ def read_config() -> dict[str, int]:
         raise ValueError(f"{CONFIG_PATH.name} に有効な dungeonButtonMoveX/Y が1つだけ必要です。")
     values["dungeonButtonMoveX"] = active_options[0].x
     values["dungeonButtonMoveY"] = active_options[0].y
+    values["clickRepeatIntervalMs"] = read_click_repeat_interval()
     return values
 
 
@@ -194,6 +246,7 @@ def write_config(values: dict[str, int]) -> None:
     if count == 0:
         raise ValueError(f"{CONFIG_PATH.name} の dungeonButtonMoveX/Y を更新できませんでした。")
     CONFIG_PATH.write_text(text, encoding="utf-8-sig")
+    write_click_repeat_interval(values["clickRepeatIntervalMs"])
 
 
 def close_known_macro_scripts(autohotkey_exe: Path) -> None:
@@ -235,8 +288,8 @@ class MacroConfigApp(tk.Tk):
     def __init__(self) -> None:
         super().__init__()
         self.title("VRChat Party Macro Config")
-        self.geometry("820x300")
-        self.minsize(820, 300)
+        self.geometry("820x350")
+        self.minsize(820, 350)
         self.resizable(True, False)
 
         self.autohotkey_exe = find_autohotkey()
@@ -247,6 +300,7 @@ class MacroConfigApp(tk.Tk):
         self.dungeon_var = tk.StringVar()
         self.ascend_var = tk.StringVar()
         self.sale_var = tk.StringVar()
+        self.click_repeat_var = tk.StringVar()
         self.dungeon_button_var = tk.StringVar()
         self.ahk_var = tk.StringVar()
         self.selected_ahk_path: Path | None = None
@@ -281,13 +335,18 @@ class MacroConfigApp(tk.Tk):
         ttk.Label(root, text="売却間隔 (秒)").grid(row=2, column=0, sticky="w", **padding)
         self.sale_entry = ttk.Entry(root, textvariable=self.sale_var, width=18)
         self.sale_entry.grid(row=2, column=1, sticky="ew", **padding)
+
+        ttk.Label(root, text="クリック連打間隔 (ms)").grid(row=3, column=0, sticky="w", **padding)
+        self.click_repeat_entry = ttk.Entry(root, textvariable=self.click_repeat_var, width=18)
+        self.click_repeat_entry.grid(row=3, column=1, sticky="ew", **padding)
         self.interval_entries = {
             "dungeonClearIntervalMs": self.dungeon_entry,
             "ascendIntervalMs": self.ascend_entry,
             "saleIntervalMs": self.sale_entry,
+            "clickRepeatIntervalMs": self.click_repeat_entry,
         }
 
-        ttk.Label(root, text="ダンジョンボタン位置").grid(row=3, column=0, sticky="w", **padding)
+        ttk.Label(root, text="ダンジョンボタン位置").grid(row=4, column=0, sticky="w", **padding)
         self.dungeon_button_combo = ttk.Combobox(
             root,
             textvariable=self.dungeon_button_var,
@@ -295,9 +354,9 @@ class MacroConfigApp(tk.Tk):
             width=18,
             state="readonly",
         )
-        self.dungeon_button_combo.grid(row=3, column=1, sticky="ew", **padding)
+        self.dungeon_button_combo.grid(row=4, column=1, sticky="ew", **padding)
 
-        ttk.Label(root, text="実行するAHK").grid(row=4, column=0, sticky="w", **padding)
+        ttk.Label(root, text="実行するAHK").grid(row=5, column=0, sticky="w", **padding)
         combo = ttk.Combobox(
             root,
             textvariable=self.ahk_var,
@@ -305,18 +364,18 @@ class MacroConfigApp(tk.Tk):
             width=70,
             state="readonly",
         )
-        combo.grid(row=4, column=1, sticky="ew", **padding)
+        combo.grid(row=5, column=1, sticky="ew", **padding)
         combo.bind("<<ComboboxSelected>>", self.on_ahk_selected)
-        ttk.Button(root, text="選択", command=self.browse_ahk).grid(row=4, column=2, sticky="ew", **padding)
+        ttk.Button(root, text="選択", command=self.browse_ahk).grid(row=5, column=2, sticky="ew", **padding)
 
         buttons = ttk.Frame(root)
-        buttons.grid(row=5, column=0, columnspan=3, sticky="e", pady=(10, 4))
+        buttons.grid(row=6, column=0, columnspan=3, sticky="e", pady=(10, 4))
         ttk.Button(buttons, text="再読込", command=self.reload_config).grid(row=0, column=0, padx=4)
         ttk.Button(buttons, text="保存のみ", command=self.save_only).grid(row=0, column=1, padx=4)
         ttk.Button(buttons, text="適用して実行", command=self.apply_and_run).grid(row=0, column=2, padx=4)
 
         ttk.Label(root, textvariable=self.status_var, foreground="#444").grid(
-            row=6,
+            row=7,
             column=0,
             columnspan=3,
             sticky="w",
@@ -341,6 +400,7 @@ class MacroConfigApp(tk.Tk):
             "dungeonClearIntervalMs": capabilities.uses_dungeon_clear_interval,
             "ascendIntervalMs": capabilities.uses_ascend_interval,
             "saleIntervalMs": capabilities.uses_sale_interval,
+            "clickRepeatIntervalMs": capabilities.uses_click_repeat_interval,
         }
         for name, is_enabled in states.items():
             self.interval_entries[name].configure(state="normal" if is_enabled else "disabled")
@@ -366,6 +426,7 @@ class MacroConfigApp(tk.Tk):
         self.dungeon_var.set(ms_to_seconds_text(values["dungeonClearIntervalMs"]))
         self.ascend_var.set(ms_to_seconds_text(values["ascendIntervalMs"]))
         self.sale_var.set(ms_to_seconds_text(values["saleIntervalMs"]))
+        self.click_repeat_var.set(str(values["clickRepeatIntervalMs"]))
         self.refresh_dungeon_button_options()
         self.dungeon_button_var.set(
             self.dungeon_button_label(
@@ -393,11 +454,13 @@ class MacroConfigApp(tk.Tk):
             "dungeonClearIntervalMs": "ダンジョンクリア間隔",
             "ascendIntervalMs": "転生間隔",
             "saleIntervalMs": "売却間隔",
+            "clickRepeatIntervalMs": "クリック連打間隔",
         }
         raw_values = {
             "dungeonClearIntervalMs": self.dungeon_var.get(),
             "ascendIntervalMs": self.ascend_var.get(),
             "saleIntervalMs": self.sale_var.get(),
+            "clickRepeatIntervalMs": self.click_repeat_var.get(),
         }
         current_values = read_config()
         values: dict[str, int] = {}
@@ -405,6 +468,12 @@ class MacroConfigApp(tk.Tk):
             entry = self.interval_entries[name]
             if entry.instate(["disabled"]):
                 values[name] = current_values[name]
+            elif name == "clickRepeatIntervalMs":
+                values[name] = milliseconds_text_to_ms(
+                    raw,
+                    labels[name],
+                    CLICK_REPEATER_MIN_INTERVAL_MS,
+                )
             else:
                 values[name] = seconds_text_to_ms(raw, labels[name])
         if self.dungeon_button_combo.instate(["disabled"]):
